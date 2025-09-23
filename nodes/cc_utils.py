@@ -35,27 +35,27 @@ class CCConfig:
         config.read(config_path)
 
         try:
-            if os.environ.get("CC_API_KEY") is not None:
-                print("CC_API_KEY found in environment variables")
-                self._key = os.environ["CC_API_KEY"]
+            if os.environ.get("VOLCENGINE_API_KEY") is not None:
+                print("VOLCENGINE_API_KEY found in environment variables")
+                self._key = os.environ["VOLCENGINE_API_KEY"]
             else:
-                print("CC_API_KEY not found in environment variables")
-                self._key = config["API"]["CC_API_KEY"]
-                print("CC_API_KEY found in config.ini")
-                os.environ["CC_API_KEY"] = self._key
-                print("CC_API_KEY set in environment variables")
+                print("VOLCENGINE_API_KEY not found in environment variables")
+                self._key = config["volcengine"]["API_KEY"]
+                print("VOLCENGINE_API_KEY found in config.ini")
+                os.environ["VOLCENGINE_API_KEY"] = self._key
+                print("VOLCENGINE_API_KEY set in environment variables")
 
-            # Check if CC API key is the default placeholder
-            if self._key == "<your_cc_api_key_here>":
-                print("WARNING: You are using the default CC API key placeholder!")
-                print("Please set your actual CC API key in either:")
-                print("1. The config.ini file under [API] section")
-                print("2. Or as an environment variable named CC_API_KEY")
+            # Check if API key is the default placeholder
+            if self._key == "<your_volcengine_api_key_here>":
+                print("WARNING: You are using the default API key placeholder!")
+                print("Please set your actual API key in either:")
+                print("1. The config.ini file under [volcengine] section")
+                print("2. Or as an environment variable named VOLCENGINE_API_KEY")
         except KeyError:
-            print("Error: CC_API_KEY not found in config.ini or environment variables")
+            print("Error: API_KEY not found in config.ini or environment variables")
 
     def get_key(self):
-        """Get the CC API key."""
+        """Get the API key for volcengine."""
         return self._key
 
 

@@ -3,6 +3,9 @@ import math
 
 
 class Seedream4:
+    # 用于存储请求缓存，防止重复请求
+    _request_cache = {}
+    
     @classmethod
     def INPUT_TYPES(cls):
         return {
@@ -10,17 +13,17 @@ class Seedream4:
                 "prompt": ("STRING", {"default": "", "multiline": True}),
                 "image_size": (
                     [
-                        "16_9",  # 2560*1440
-                        "3_2",   # 2496*1664
-                        "4_3",   # 2304*1728
-                        "1_1",   # 2048*2048
-                        "3_4",   # 1728*2304
-                        "2_3",   # 1664*2496
-                        "9_16",  # 1440x2560
-                        "follow_reference",  # 跟随第一张参考图片的尺寸和比例
-                        "custom",
+                        "16:9 (2560x1440)",  # 16_9
+                        "3:2 (2496x1664)",   # 3_2
+                        "4:3 (2304x1728)",   # 4_3
+                        "1:1 (2048x2048)",   # 1_1
+                        "3:4 (1728x2304)",   # 3_4
+                        "2:3 (1664x2496)",   # 2_3
+                        "9:16 (1440x2560)",  # 9_16
+                        "跟随参考",  # follow_reference
+                        "自定义",  # custom
                     ],
-                    {"default": "1_1"},
+                    {"default": "1:1 (2048x2048)"},
                 ),
                 "width": (
                     "INT",
@@ -29,6 +32,10 @@ class Seedream4:
                 "height": (
                     "INT",
                     {"default": 2048, "min": 1024, "max": 4096, "step": 16},
+                ),
+                "seed": (
+                    "INT",
+                    {"default": -1, "min": -1, "max": 2147483647},
                 ),
                 "num_images": ("INT", {"default": 1, "min": 1, "max": 6}),
                 "max_images": ("INT", {"default": 1, "min": 1, "max": 6}),
@@ -44,11 +51,8 @@ class Seedream4:
                 "image_8": ("IMAGE",),
                 "image_9": ("IMAGE",),
                 "image_10": ("IMAGE",),
-                "sequential_image_generation": (
-                    ["disabled", "auto"],
-                    {"default": "disabled"},
-                ),
-                "enable_4k": ("BOOLEAN", {"default": False}),
+                "sequential_image_generation": ("BOOLEAN", {"default": False, "label_on": "启用", "label_off": "禁用"}),
+                "enable_4k": ("BOOLEAN", {"default": False, "label_on": "启用", "label_off": "禁用"}),
                 "api_key": ("STRING", {"default": ""}),
             },
         }
@@ -144,12 +148,38 @@ class Seedream4:
         
         return f"{width}x{height}"
 
+    @staticmethod
+    def _generate_request_key(prompt, image_size, width, height, seed, num_images, max_images, 
+                            sequential_image_generation, enable_4k, image_urls):
+        """
+        生成请求的唯一键，用于缓存判断
+        """
+        # 将所有参数组合成一个字符串作为键
+        key_parts = [
+            str(prompt),
+            str(image_size),
+            str(width),
+            str(height),
+            str(seed),
+            str(num_images),
+            str(max_images),
+            str(sequential_image_generation),
+            str(enable_4k)
+        ]
+        
+        # 如果有图片URL，也加入键的计算
+        if image_urls:
+            key_parts.extend(image_urls)
+        
+        return "|".join(key_parts)
+    
     def generate_image(
         self,
         prompt,
         image_size,
         width,
         height,
+        seed,
         num_images,
         max_images,
         image_1=None,
@@ -162,7 +192,7 @@ class Seedream4:
         image_8=None,
         image_9=None,
         image_10=None,
-        sequential_image_generation="disabled",
+        sequential_image_generation=False,
         enable_4k=False,
         api_key=""
     ):
@@ -192,11 +222,22 @@ class Seedream4:
                 else:
                     print(f"Error: Failed to process image {i} for Seedream 4.0")
         
+        # 生成请求键
+        request_key = self._generate_request_key(
+            prompt, image_size, width, height, seed, num_images, max_images,
+            sequential_image_generation, enable_4k, image_urls
+        )
+        
+        # 检查缓存中是否已有相同请求的结果
+        if request_key in self._request_cache:
+            print(f"Using cached result for request with seed: {seed}")
+            return self._request_cache[request_key]
+        
         # Convert image_size to the format expected by the API
         size = None
-        if image_size == "custom":
+        if image_size == "自定义":
             size = f"{width}x{height}"
-        elif image_size == "follow_reference":
+        elif image_size == "跟随参考":
             if reference_image:
                 # 获取参考图片的尺寸
                 ref_width, ref_height = reference_image.size
@@ -213,34 +254,34 @@ class Seedream4:
         else:
             # 预设尺寸的4K和普通分辨率映射
             if enable_4k:
-                if image_size == "16_9":
+                if image_size == "16:9 (2560x1440)":
                     size = "4096x2304"
-                elif image_size == "3_2":
+                elif image_size == "3:2 (2496x1664)":
                     size = "4096x2731"
-                elif image_size == "4_3":
+                elif image_size == "4:3 (2304x1728)":
                     size = "4096x3072"
-                elif image_size == "1_1":
+                elif image_size == "1:1 (2048x2048)":
                     size = "4096x4096"
-                elif image_size == "3_4":
+                elif image_size == "3:4 (1728x2304)":
                     size = "3072x4096"
-                elif image_size == "2_3":
+                elif image_size == "2:3 (1664x2496)":
                     size = "2731x4096"
-                elif image_size == "9_16":
+                elif image_size == "9:16 (1440x2560)":
                     size = "2304x4096"
             else:
-                if image_size == "16_9":
+                if image_size == "16:9 (2560x1440)":
                     size = "2560x1440"
-                elif image_size == "3_2":
+                elif image_size == "3:2 (2496x1664)":
                     size = "2496x1664"
-                elif image_size == "4_3":
+                elif image_size == "4:3 (2304x1728)":
                     size = "2304x1728"
-                elif image_size == "1_1":
+                elif image_size == "1:1 (2048x2048)":
                     size = "2048x2048"
-                elif image_size == "3_4":
+                elif image_size == "3:4 (1728x2304)":
                     size = "1728x2304"
-                elif image_size == "2_3":
+                elif image_size == "2:3 (1664x2496)":
                     size = "1664x2496"
-                elif image_size == "9_16":
+                elif image_size == "9:16 (1440x2560)":
                     size = "1440x2560"
         
         try:
@@ -249,16 +290,26 @@ class Seedream4:
                 prompt=prompt,
                 images=image_urls if image_urls else None,
                 size=size,
-                sequential_image_generation=sequential_image_generation,
+                sequential_image_generation="auto" if sequential_image_generation else "disabled",
                 max_images=max_images
             )
             
             if result:
-                return ResultProcessor.process_image_result(result)
+                processed_result = ResultProcessor.process_image_result(result)
+                # 将结果存储到缓存中
+                if processed_result is not None:
+                    self._request_cache[request_key] = processed_result
+                return processed_result
             else:
-                return ResultProcessor.create_blank_image()
+                blank_result = ResultProcessor.create_blank_image()
+                # 将空白结果也存储到缓存中
+                self._request_cache[request_key] = blank_result
+                return blank_result
         except Exception as e:
-            return ApiHandler.handle_image_generation_error("Seedream 4.0", e)
+            error_result = ApiHandler.handle_image_generation_error("Seedream 4.0", e)
+            # 将错误结果也存储到缓存中
+            self._request_cache[request_key] = error_result
+            return error_result
 
 
 NODE_CLASS_MAPPINGS = {
@@ -266,5 +317,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Seedream4": "Seedream 4.0",
+    "Seedream4": "即梦4.0",
 }

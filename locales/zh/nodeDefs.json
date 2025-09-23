@@ -1,7 +1,7 @@
 {
   "Seedream4": {
-    "display_name": "Seedream 4.0",
-    "description": "Seedream 4.0 图像生成节点，支持文本到图像和多图像输入的生成。",
+    "display_name": "即梦4.0",
+    "description": "即梦4.0图像生成节点，支持文本到图像和多图像输入的生成。",
     "inputs": {
       "prompt": {
         "name": "提示词",
@@ -29,6 +29,10 @@
       "height": {
         "name": "高度",
         "tooltip": "自定义图像高度，范围1024-4096，步长16。"
+      },
+      "seed": {
+        "name": "随机种子",
+        "tooltip": "由于Seedream 4.0不支持随机种子，此选项主要用于控制相同参数下图片是否要重复生成。当所有参数（包括种子）相同时，将直接返回缓存结果而不重新请求API。取值范围为 [-1, 2147483647]，默认值为-1。"
       },
       "num_images": {
         "name": "生成图像数量",
@@ -80,11 +84,7 @@
       },
       "sequential_image_generation": {
         "name": "组图生成",
-        "tooltip": "是否启用组图生成功能。启用后可以生成多张相关联的图像。",
-        "options": {
-          "disabled": "禁用",
-          "auto": "自动"
-        }
+        "tooltip": "是否启用组图生成功能。启用后可以生成多张相关联的图像。"
       },
       "api_key": {
         "name": "API密钥",

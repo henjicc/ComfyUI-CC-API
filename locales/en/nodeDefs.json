@@ -1,6 +1,6 @@
 {
   "Seedream4": {
-    "display_name": "Seedream 4.0",
+    "display_name": "即梦4.0",
     "description": "Seedream 4.0 image generation node, supporting both text-to-image and multi-image input generation.",
     "inputs": {
       "prompt": {
@@ -9,18 +9,7 @@
       },
       "image_size": {
         "name": "Image Size",
-        "tooltip": "Output image aspect ratio. You can choose preset ratios, follow reference image, or custom sizes. When 4K resolution is enabled, preset ratios will use higher resolutions.",
-        "options": {
-          "16_9": "16:9 (2560x1440)",
-          "3_2": "3:2 (2496x1664)",
-          "4_3": "4:3 (2304x1728)",
-          "1_1": "1:1 (2048x2048)",
-          "3_4": "3:4 (1728x2304)",
-          "2_3": "2:3 (1664x2496)",
-          "9_16": "9:16 (1440x2560)",
-          "follow_reference": "Follow Reference",
-          "custom": "Custom"
-        }
+        "tooltip": "Output image aspect ratio. You can choose preset ratios, follow reference image, or custom sizes. When 4K resolution is enabled, preset ratios will use higher resolutions."
       },
       "width": {
         "name": "Width",
@@ -29,6 +18,10 @@
       "height": {
         "name": "Height",
         "tooltip": "Custom image height, range 1024-4096, step 16."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Since Seedream 4.0 does not support random seeds, this option is mainly used to control whether to regenerate images with the same parameters. When all parameters (including seed) are the same, cached results will be returned directly without re-requesting the API. Value range is [-1, 2147483647], default value is -1."
       },
       "num_images": {
         "name": "Number of Images",
@@ -80,11 +73,7 @@
       },
       "sequential_image_generation": {
         "name": "Sequential Image Generation",
-        "tooltip": "Whether to enable sequential image generation. When enabled, multiple related images can be generated.",
-        "options": {
-          "disabled": "Disabled",
-          "auto": "Auto"
-        }
+        "tooltip": "Whether to enable sequential image generation. When enabled, multiple related images can be generated."
       },
       "api_key": {
         "name": "API Key",
