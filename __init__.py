@@ -4,6 +4,7 @@ import importlib.util
 node_list = [
     "seedream_node",
     "seedream_fal_node",
+    "qwen3_tts_node",
 ]
 
 NODE_CLASS_MAPPINGS = {}

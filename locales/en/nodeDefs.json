@@ -202,5 +202,65 @@
         "tooltip": "Generated image."
       }
     }
+  },
+  "Qwen3TTS": {
+    "display_name": "Qwen3-TTS",
+    "description": "Text-to-speech node based on Qwen3 model, supporting multiple voices and languages.",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text content to be converted to speech. If the text exceeds 1000 characters, it will be automatically split into multiple segments for processing."
+      },
+      "voice": {
+        "name": "Voice",
+        "tooltip": "Voice type for speech synthesis.",
+        "options": {
+          "longxiaochun": "Long Xiaochun",
+          "longfei": "Long Fei",
+          "longjing": "Long Jing",
+          "longxiaoxia": "Long Xiaoxia",
+          "longmengmeng": "Long Mengmeng",
+          "longxiaotian": "Long Xiaotian",
+          "longxiaoer": "Long Xiaoer",
+          "longxiaobei": "Long Xiaobei",
+          "longxiaoyun": "Long Xiaoyun",
+          "longxiaorong": "Long Xiaorong",
+          "longxiaoqi": "Long Xiaoqi",
+          "longxiaoyu": "Long Xiaoyu",
+          "longxiaoxuan": "Long Xiaoxuan",
+          "longxiaoai": "Long Xiaoai",
+          "longxiaomei": "Long Xiaomei",
+          "longxiaoxin": "Long Xiaoxin",
+          "longxiaoqian": "Long Xiaoqian"
+        }
+      },
+      "language_type": {
+        "name": "Language",
+        "tooltip": "Language type for speech synthesis.",
+        "options": {
+          "zh": "Chinese",
+          "en": "English",
+          "yue": "Cantonese",
+          "ja": "Japanese",
+          "ko": "Korean",
+          "vi": "Vietnamese",
+          "ms": "Malay",
+          "tl": "Filipino",
+          "th": "Thai",
+          "ru": "Russian",
+          "es": "Spanish"
+        }
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "Access key for Dashscope API. If not provided, the key from the configuration file or environment variable DASHSCOPE_API_KEY will be used."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Audio",
+        "tooltip": "Generated audio file."
+      }
+    }
   }
 }
