@@ -1,0 +1,105 @@
+{
+  "Seedream4": {
+    "display_name": "Seedream 4.0",
+    "description": "Seedream 4.0 image generation node, supporting both text-to-image and multi-image input generation.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for image generation, supports both Chinese and English."
+      },
+      "image_size": {
+        "name": "Image Size",
+        "tooltip": "Output image aspect ratio. You can choose preset ratios, follow reference image, or custom sizes. When 4K resolution is enabled, preset ratios will use higher resolutions.",
+        "options": {
+          "16_9": "16:9 (2560x1440)",
+          "3_2": "3:2 (2496x1664)",
+          "4_3": "4:3 (2304x1728)",
+          "1_1": "1:1 (2048x2048)",
+          "3_4": "3:4 (1728x2304)",
+          "2_3": "2:3 (1664x2496)",
+          "9_16": "9:16 (1440x2560)",
+          "follow_reference": "Follow Reference",
+          "custom": "Custom"
+        }
+      },
+      "width": {
+        "name": "Width",
+        "tooltip": "Custom image width, range 1024-4096, step 16."
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Custom image height, range 1024-4096, step 16."
+      },
+      "num_images": {
+        "name": "Number of Images",
+        "tooltip": "Number of images to generate, range 1-6."
+      },
+      "max_images": {
+        "name": "Max Images",
+        "tooltip": "Maximum number of images to generate, range 1-6."
+      },
+      "image_1": {
+        "name": "Reference Image 1",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_2": {
+        "name": "Reference Image 2",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_3": {
+        "name": "Reference Image 3",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_4": {
+        "name": "Reference Image 4",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_5": {
+        "name": "Reference Image 5",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_6": {
+        "name": "Reference Image 6",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_7": {
+        "name": "Reference Image 7",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_8": {
+        "name": "Reference Image 8",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_9": {
+        "name": "Reference Image 9",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_10": {
+        "name": "Reference Image 10",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "sequential_image_generation": {
+        "name": "Sequential Image Generation",
+        "tooltip": "Whether to enable sequential image generation. When enabled, multiple related images can be generated.",
+        "options": {
+          "disabled": "Disabled",
+          "auto": "Auto"
+        }
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "Access key for Seedream API. If not provided, the key from the configuration file will be used."
+      },
+      "enable_4k": {
+        "name": "Enable 4K Resolution",
+        "tooltip": "Whether to enable 4K resolution output. This option is invalid when image size is set to custom."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Generated image."
+      }
+    }
+  }
+}
