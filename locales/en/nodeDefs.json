@@ -90,5 +90,117 @@
         "tooltip": "Generated image."
       }
     }
+  },
+  "Seedream4Fal": {
+    "display_name": "Seedream 4.0 (fal)",
+    "description": "Seedream 4.0 (fal) image generation node based on fal interface, supporting text-to-image and image editing features with automatic interface switching.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for image generation, supports both Chinese and English."
+      },
+      "image_size": {
+        "name": "Image Size",
+        "tooltip": "Output image aspect ratio. You can choose preset ratios or custom sizes.",
+        "options": {
+          "1_1": "1:1 (1024x1024)",
+          "3_4": "3:4 (896x1152)",
+          "4_3": "4:3 (1152x896)",
+          "9_16": "9:16 (768x1344)",
+          "16_9": "16:9 (1344x768)",
+          "custom": "Custom"
+        }
+      },
+      "width": {
+        "name": "Width",
+        "tooltip": "Custom image width, range 512-1536, step 64."
+      },
+      "height": {
+        "name": "Height",
+        "tooltip": "Custom image height, range 512-1536, step 64."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Controls the randomness of image generation. Set to -1 for random generation. Value range is [-1, 2147483647], default value is -1."
+      },
+      "num_images": {
+        "name": "Number of Images",
+        "tooltip": "Number of images to generate, range 1-4."
+      },
+      "max_images": {
+        "name": "Max Images",
+        "tooltip": "Maximum number of images to generate, range 1-4."
+      },
+      "image": {
+        "name": "Input Image",
+        "tooltip": "Optional input image for image editing. If provided, will automatically switch to image editing mode."
+      },
+      "image_1": {
+        "name": "Reference Image 1",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_2": {
+        "name": "Reference Image 2",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_3": {
+        "name": "Reference Image 3",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_4": {
+        "name": "Reference Image 4",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_5": {
+        "name": "Reference Image 5",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_6": {
+        "name": "Reference Image 6",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_7": {
+        "name": "Reference Image 7",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_8": {
+        "name": "Reference Image 8",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_9": {
+        "name": "Reference Image 9",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "image_10": {
+        "name": "Reference Image 10",
+        "tooltip": "Optional reference image for image-to-image generation."
+      },
+      "strength": {
+        "name": "Strength",
+        "tooltip": "Strength of image editing, range 0-1. Higher values result in more significant changes to the original image. Only effective when an input image is provided."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "Access key for FAL API. If not provided, the key from the configuration file or environment variable FAL_API_KEY will be used."
+      },
+      "enable_4k": {
+        "name": "Enable 4K Resolution",
+        "tooltip": "Whether to enable 4K resolution output. This option is invalid when image size is set to custom."
+      },
+      "enable_safety_checker": {
+        "name": "Enable Safety Checker",
+        "tooltip": "Whether to enable content safety checking. When enabled, some sensitive content may be filtered out."
+      },
+      "sync_mode": {
+        "name": "Sync Mode",
+        "tooltip": "Whether to use synchronous mode for API calls. Synchronous mode waits for the API to complete before returning results, while asynchronous mode returns a task ID immediately."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Image",
+        "tooltip": "Generated image."
+      }
+    }
   }
 }

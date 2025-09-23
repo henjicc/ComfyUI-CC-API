@@ -3,6 +3,7 @@ import importlib.util
 
 node_list = [
     "seedream_node",
+    "seedream_fal_node",
 ]
 
 NODE_CLASS_MAPPINGS = {}
