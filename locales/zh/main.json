@@ -1,6 +1,7 @@
 {
   "settingsCategories": {
     "CC-API": "CC-API",
-    "Image": "图像"
+    "Image": "图像",
+    "Audio": "音频"
   }
 }

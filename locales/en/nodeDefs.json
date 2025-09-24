@@ -202,5 +202,92 @@
         "tooltip": "Generated image."
       }
     }
+  },
+  "MiniMaxTTS": {
+    "display_name": "MiniMax TTS",
+    "description": "MiniMax text-to-speech node supporting multiple languages and voices, converts text into natural and fluent speech.",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text content to synthesize, supports multilingual mixed input. Maximum input is 10000 characters."
+      },
+      "voice": {
+        "name": "Voice",
+        "tooltip": "Select the voice for speech synthesis, supporting various voices in different languages."
+      },
+      "model": {
+        "name": "Model",
+        "tooltip": "Select the speech synthesis model, different models have differences in quality and speed.",
+        "options": {
+          "speech-2.5-hd-preview": "speech-2.5-hd-preview - Latest high-quality preview version",
+          "speech-2.5-turbo-preview": "speech-2.5-turbo-preview - Latest high-speed preview version",
+          "speech-02-hd": "speech-02-hd - High-quality version",
+          "speech-02-turbo": "speech-02-turbo - High-speed version",
+          "speech-01-hd": "speech-01-hd - Standard high-quality version",
+          "speech-01-turbo": "speech-01-turbo - Standard high-speed version"
+        }
+      },
+      "speed": {
+        "name": "Speed",
+        "tooltip": "Adjust speech playback speed, range 0.5-2.0, default value is 1.0."
+      },
+      "vol": {
+        "name": "Volume",
+        "tooltip": "Adjust speech volume, range 0.1-10.0, default value is 1.0."
+      },
+      "pitch": {
+        "name": "Pitch",
+        "tooltip": "Adjust speech pitch, range -12 to 12, default value is 0."
+      },
+      "emotion": {
+        "name": "Emotion",
+        "tooltip": "Select speech emotion, affects the emotional expression of the voice.",
+        "options": {
+          "happy": "Happy",
+          "sad": "Sad",
+          "angry": "Angry",
+          "fearful": "Fearful",
+          "disgusted": "Disgusted",
+          "surprised": "Surprised",
+          "calm": "Calm"
+        }
+      },
+      "text_normalization": {
+        "name": "Text Normalization",
+        "tooltip": "Whether to normalize text, such as conversion of numbers, dates, etc."
+      },
+      "format": {
+        "name": "Audio Format",
+        "tooltip": "Select the output audio format.",
+        "options": {
+          "mp3": "MP3 - Compressed audio format",
+          "pcm": "PCM - Uncompressed audio format",
+          "flac": "FLAC - Lossless compressed audio format",
+          "wav": "WAV - Standard audio format"
+        }
+      },
+      "sample_rate": {
+        "name": "Sample Rate",
+        "tooltip": "Select audio sample rate, affects audio quality and file size."
+      },
+      "bitrate": {
+        "name": "Bitrate",
+        "tooltip": "Select audio bitrate, only valid for MP3 format, affects audio quality and file size."
+      },
+      "channel": {
+        "name": "Channel",
+        "tooltip": "Select audio channel count, 1 for mono, 2 for stereo."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "MiniMax API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Audio",
+        "tooltip": "Generated audio file."
+      }
+    }
   }
 }

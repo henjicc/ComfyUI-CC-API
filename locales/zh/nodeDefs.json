@@ -273,5 +273,92 @@
         "tooltip": "生成的音频文件。"
       }
     }
+  },
+  "MiniMaxTTS": {
+    "display_name": "MiniMax TTS",
+    "description": "MiniMax语音合成节点，支持多种语言和音色，可将文本转换为自然流畅的语音。",
+    "inputs": {
+      "text": {
+        "name": "文本",
+        "tooltip": "要合成的文本内容，支持多语言混合输入。最长输入为10000个字符。"
+      },
+      "voice": {
+        "name": "音色",
+        "tooltip": "选择语音合成的音色，支持多种语言的不同风格音色。"
+      },
+      "model": {
+        "name": "模型",
+        "tooltip": "选择语音合成模型，不同模型在音质和速度上有所差异。",
+        "options": {
+          "speech-2.5-hd-preview": "speech-2.5-hd-preview - 最新高质量预览版",
+          "speech-2.5-turbo-preview": "speech-2.5-turbo-preview - 最新高速预览版",
+          "speech-02-hd": "speech-02-hd - 高质量版",
+          "speech-02-turbo": "speech-02-turbo - 高速版",
+          "speech-01-hd": "speech-01-hd - 标准高质量版",
+          "speech-01-turbo": "speech-01-turbo - 标准高速版"
+        }
+      },
+      "speed": {
+        "name": "语速",
+        "tooltip": "调整语音播放速度，范围0.5-2.0，默认值为1.0。"
+      },
+      "vol": {
+        "name": "音量",
+        "tooltip": "调整语音音量，范围0.1-10.0，默认值为1.0。"
+      },
+      "pitch": {
+        "name": "音调",
+        "tooltip": "调整语音音调，范围-12到12，默认值为0。"
+      },
+      "emotion": {
+        "name": "情绪",
+        "tooltip": "选择语音情绪，影响语音的情感表达。",
+        "options": {
+          "happy": "开心",
+          "sad": "悲伤",
+          "angry": "愤怒",
+          "fearful": "恐惧",
+          "disgusted": "厌恶",
+          "surprised": "惊讶",
+          "calm": "平静"
+        }
+      },
+      "text_normalization": {
+        "name": "文本规范化",
+        "tooltip": "是否对文本进行规范化处理，如数字、日期等的转换。"
+      },
+      "format": {
+        "name": "音频格式",
+        "tooltip": "选择输出音频的格式。",
+        "options": {
+          "mp3": "MP3 - 压缩音频格式",
+          "pcm": "PCM - 无压缩音频格式",
+          "flac": "FLAC - 无损压缩音频格式",
+          "wav": "WAV - 标准音频格式"
+        }
+      },
+      "sample_rate": {
+        "name": "采样率",
+        "tooltip": "选择音频采样率，影响音频质量和文件大小。"
+      },
+      "bitrate": {
+        "name": "比特率",
+        "tooltip": "选择音频比特率，仅对MP3格式有效，影响音频质量和文件大小。"
+      },
+      "channel": {
+        "name": "声道数",
+        "tooltip": "选择音频声道数，1为单声道，2为立体声。"
+      },
+      "api_key": {
+        "name": "API密钥",
+        "tooltip": "MiniMax API的访问密钥。如果未提供，将使用配置文件中的密钥。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "音频",
+        "tooltip": "生成的音频文件。"
+      }
+    }
   }
 }
