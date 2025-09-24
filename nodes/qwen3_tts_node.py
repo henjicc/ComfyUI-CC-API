@@ -13,7 +13,6 @@ import random
 import hashlib
 import time
 import server
-from aiohttp import web
 from .cc_utils import CCConfig
 
 
@@ -87,6 +86,7 @@ class Qwen3TTS:
             },
             "optional": {
                 "api_key": ("STRING", {"default": ""}),
+                "preview_voice": ("BOOLEAN", {"default": False}),
             },
         }
 
@@ -206,9 +206,20 @@ class Qwen3TTS:
         text,
         voice,
         language_type="Auto",
-        api_key=""
+        api_key="",
+        preview_voice=False
     ):
         """生成语音"""
+        
+        # 如果启用预览功能，直接返回预览音频
+        if preview_voice:
+            preview_audio = self.load_preview_audio(voice)
+            if preview_audio:
+                return (preview_audio,)
+            else:
+                # 如果预览加载失败，返回静音音频
+                silence = self._create_blank_audio()
+                return (silence,)
         
         # 获取API密钥
         api_key = self.get_dashscope_api_key(api_key)
@@ -390,22 +401,17 @@ def setup_routes():
                 # 从 [B, C, T] 转换为 [T, C]
                 waveform = waveform[0].T  # 取第一个批次并转置
             
-            # 确保数据类型是float32，范围在[-1.0, 1.0]
-            if waveform.dtype != np.float32:
-                waveform = waveform.astype(np.float32)
-            
-            # 检查数据范围，如果不在[-1.0, 1.0]范围内，进行归一化
-            max_val = np.max(np.abs(waveform))
-            if max_val > 1.0:
-                waveform = waveform / max_val
+            # 确保数据类型是int16
+            if waveform.dtype != np.int16:
+                # 从float32 [-1.0, 1.0] 转换为 int16 [-32768, 32767]
+                waveform = (waveform * 32767).astype(np.int16)
             
             # 创建临时文件
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
                 temp_file_path = temp_file.name
             
-            # 保存为WAV文件，确保使用正确的数据类型
-            waveform_int16 = (waveform * 32767).astype(np.int16)
-            wavfile.write(temp_file_path, sample_rate, waveform_int16)
+            # 保存为WAV文件
+            wavfile.write(temp_file_path, sample_rate, waveform)
             
             # 读取文件并编码为Base64
             with open(temp_file_path, "rb") as audio_file:
