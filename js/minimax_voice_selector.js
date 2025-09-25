@@ -17,30 +17,13 @@ app.registerExtension({
                 
                 // 创建刷新按钮
                 const refreshButton = document.createElement("button");
-                refreshButton.innerText = "刷新音色列表";
-                refreshButton.style.display = "block";
-                refreshButton.style.width = "100%";
-                refreshButton.style.marginTop = "5px";
-                refreshButton.style.marginBottom = "5px";
-                refreshButton.style.backgroundColor = "#4CAF50";
-                refreshButton.style.color = "white";
-                refreshButton.style.border = "none";
-                refreshButton.style.padding = "8px 16px";
-                refreshButton.style.textAlign = "center";
-                refreshButton.style.textDecoration = "none";
-                refreshButton.style.display = "inline-block";
-                refreshButton.style.fontSize = "14px";
-                refreshButton.style.cursor = "pointer";
-                refreshButton.style.borderRadius = "4px";
+                refreshButton.innerText = "🔄 刷新音色列表";
                 
-                // 添加鼠标悬停效果
-                refreshButton.addEventListener("mouseenter", () => {
-                    refreshButton.style.backgroundColor = "#45a049";
-                });
+                // 使用ComfyUI原生按钮样式
+                refreshButton.className = "comfy-btn";
                 
-                refreshButton.addEventListener("mouseleave", () => {
-                    refreshButton.style.backgroundColor = "#4CAF50";
-                });
+                // 减小描边宽度
+                refreshButton.style.borderWidth = "1.5px";
                 
                 // 添加点击事件处理程序
                 refreshButton.addEventListener("click", async () => {
