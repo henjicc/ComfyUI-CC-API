@@ -282,9 +282,25 @@ class Qwen3TTS:
                             else:
                                 waveform = waveform.astype(np.float32)
                         
-                        # 确保数据在[-1.0, 1.0]范围内
-                        if np.max(np.abs(waveform)) > 1.0:
-                            waveform = waveform / np.max(np.abs(waveform))
+                        # 确保数据在[-1.0, 1.0]范围内，但不进行不必要的缩放
+                        # 只有在数据确实超出范围时才进行归一化
+                        max_amplitude = np.max(np.abs(waveform))
+                        if max_amplitude > 1.0:
+                            waveform = waveform / max_amplitude
+                        
+                        # 检查音频末尾是否接近静音，如果不是，则进行轻微修剪以避免爆破音
+                        if len(waveform) > 100:  # 只对足够长的音频进行处理
+                            # 检查最后10个样本点的幅度
+                            end_segment = waveform[-10:] if waveform.ndim == 1 else waveform[-10:, :]
+                            end_amplitude = np.mean(np.abs(end_segment))
+                            
+                            # 如果末尾幅度较大，稍微修剪末尾以避免爆破音
+                            if end_amplitude > 0.1:  # 阈值可根据需要调整
+                                trim_length = min(5, len(waveform) // 100)  # 修剪最后的1%或5个样本点
+                                if waveform.ndim == 1:
+                                    waveform = waveform[:-trim_length] if trim_length < len(waveform) else waveform
+                                else:
+                                    waveform = waveform[:-trim_length, :] if trim_length < len(waveform) else waveform
                         
                         # 确保波形数据形状正确 [B, C, T]
                         if waveform.ndim == 1:
