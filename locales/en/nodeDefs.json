@@ -323,5 +323,65 @@
         "tooltip": "Selected voice ID string."
       }
     }
+  },
+  "MiniMaxVoiceClone": {
+    "display_name": "MiniMax Voice Clone",
+    "description": "MiniMax voice clone node, clones voice by uploading audio files, and optionally provides sample audio to enhance cloning effect.",
+    "inputs": {
+      "clone_audio": {
+        "name": "Clone Audio",
+        "tooltip": "Audio file to be cloned, supports mp3, m4a, wav formats, duration should be at least 10 seconds and no more than 5 minutes."
+      },
+      "voice_id": {
+        "name": "Voice ID",
+        "tooltip": "Custom cloned voice ID, length 8-256, first character must be an English letter, allows numbers, letters, -, _, last character cannot be - or _."
+      },
+      "prompt_audio": {
+        "name": "Prompt Audio",
+        "tooltip": "Optional sample audio file to enhance voice similarity and stability, supports mp3, m4a, wav formats, duration should be less than 8 seconds."
+      },
+      "prompt_text": {
+        "name": "Prompt Text",
+        "tooltip": "Text corresponding to the prompt audio, must match the audio content, and should end with punctuation."
+      },
+      "test_text": {
+        "name": "Test Text",
+        "tooltip": "Voice cloning test parameter, the model will read this text using the cloned voice."
+      },
+      "model": {
+        "name": "Model",
+        "tooltip": "Specify the speech model used to synthesize the test audio.",
+        "options": {
+          "speech-2.5-hd-preview": "speech-2.5-hd-preview - Latest high-quality preview version",
+          "speech-2.5-turbo-preview": "speech-2.5-turbo-preview - Latest high-speed preview version",
+          "speech-02-hd": "speech-02-hd - High-quality version",
+          "speech-02-turbo": "speech-02-turbo - High-speed version",
+          "speech-01-hd": "speech-01-hd - Standard high-quality version",
+          "speech-01-turbo": "speech-01-turbo - Standard high-speed version"
+        }
+      },
+      "need_noise_reduction": {
+        "name": "Noise Reduction",
+        "tooltip": "Voice cloning parameter, whether to enable noise reduction."
+      },
+      "need_volume_normalization": {
+        "name": "Volume Normalization",
+        "tooltip": "Voice cloning parameter, whether to enable volume normalization."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "MiniMax API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Demo Audio",
+        "tooltip": "Test audio synthesized using the cloned voice."
+      },
+      "1": {
+        "name": "Cloned Voice ID",
+        "tooltip": "Cloned voice ID string."
+      }
+    }
   }
 }

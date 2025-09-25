@@ -394,5 +394,65 @@
         "tooltip": "选中的音色ID字符串。"
       }
     }
+  },
+  "MiniMaxVoiceClone": {
+    "display_name": "MiniMax 声音克隆",
+    "description": "MiniMax声音克隆节点，通过上传音频文件克隆音色，并可选择提供示例音频以增强克隆效果。",
+    "inputs": {
+      "clone_audio": {
+        "name": "克隆音频",
+        "tooltip": "待克隆的音频文件，支持mp3、m4a、wav格式，时长最少应不低于10秒，最长应不超过5分钟。"
+      },
+      "voice_id": {
+        "name": "音色ID",
+        "tooltip": "自定义克隆音色ID，长度8-256，首字符必须为英文字母，允许数字、字母、-、_，末位不可为-、_。"
+      },
+      "prompt_audio": {
+        "name": "示例音频",
+        "tooltip": "可选的示例音频文件，有助于增强音色相似度和稳定性，支持mp3、m4a、wav格式，时长应小于8秒。"
+      },
+      "prompt_text": {
+        "name": "示例文本",
+        "tooltip": "示例音频对应的文本，需确保和音频内容一致，句末需有标点符号做结尾。"
+      },
+      "test_text": {
+        "name": "试听文本",
+        "tooltip": "复刻试听参数，模型将使用复刻后的音色朗读本段文本内容。"
+      },
+      "model": {
+        "name": "模型",
+        "tooltip": "指定合成试听音频使用的语音模型。",
+        "options": {
+          "speech-2.5-hd-preview": "speech-2.5-hd-preview - 最新高质量预览版",
+          "speech-2.5-turbo-preview": "speech-2.5-turbo-preview - 最新高速预览版",
+          "speech-02-hd": "speech-02-hd - 高质量版",
+          "speech-02-turbo": "speech-02-turbo - 高速版",
+          "speech-01-hd": "speech-01-hd - 标准高质量版",
+          "speech-01-turbo": "speech-01-turbo - 标准高速版"
+        }
+      },
+      "need_noise_reduction": {
+        "name": "降噪",
+        "tooltip": "音频复刻参数，表示是否开启降噪。"
+      },
+      "need_volume_normalization": {
+        "name": "音量归一化",
+        "tooltip": "音频复刻参数，是否开启音量归一化。"
+      },
+      "api_key": {
+        "name": "API密钥",
+        "tooltip": "MiniMax API的访问密钥。如果未提供，将使用配置文件中的密钥。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "试听音频",
+        "tooltip": "使用克隆音色合成的试听音频。"
+      },
+      "1": {
+        "name": "克隆音色ID",
+        "tooltip": "克隆成功的音色ID字符串。"
+      }
+    }
   }
 }

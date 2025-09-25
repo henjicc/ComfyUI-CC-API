@@ -10,6 +10,7 @@ node_list = [
     "seedream_fal_node",
     "qwen3_tts_node",
     "minimax_tts_node",
+    "minimax_voice_clone_node",
 ]
 
 NODE_CLASS_MAPPINGS = {}
