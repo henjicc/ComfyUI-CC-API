@@ -1,5 +1,9 @@
 import importlib
 import importlib.util
+import os
+
+# 定义WEB_DIRECTORY变量，指向JavaScript文件目录
+WEB_DIRECTORY = os.path.join(os.path.dirname(__file__), "js")
 
 node_list = [
     "seedream_node",
@@ -21,4 +25,4 @@ for module_name in node_list:
     }
 
 
-__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS"]
+__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]

@@ -13,6 +13,7 @@ import random
 import hashlib
 import time
 import server
+from aiohttp import web
 from .cc_utils import CCConfig
 
 
@@ -86,7 +87,6 @@ class Qwen3TTS:
             },
             "optional": {
                 "api_key": ("STRING", {"default": ""}),
-                "preview_voice": ("BOOLEAN", {"default": False}),
             },
         }
 
@@ -174,10 +174,16 @@ class Qwen3TTS:
                 for frame in container.decode(audio_stream):
                     # 将音频帧转换为numpy数组
                     arr = frame.to_ndarray()
+                    # 确保数据在[-1.0, 1.0]范围内
+                    if np.issubdtype(arr.dtype, np.integer):
+                        arr = arr.astype(np.float32) / np.iinfo(arr.dtype).max
+                    elif arr.dtype != np.float32:
+                        arr = arr.astype(np.float32)
                     audio_frames.append(arr)
                 
                 # 合并所有帧
                 if audio_frames:
+                    # 注意：PyAV的frame.to_ndarray()返回的形状通常是 [C, T]
                     waveform = np.concatenate(audio_frames, axis=1)
                     
                     # 确保波形形状为 [B, C, T]
@@ -189,7 +195,7 @@ class Qwen3TTS:
                         waveform = waveform.reshape(1, waveform.shape[0], waveform.shape[1])
                     
                     # 转换为torch张量
-                    waveform_tensor = torch.from_numpy(waveform).float()
+                    waveform_tensor = torch.from_numpy(waveform)
                     
                     return {
                         "waveform": waveform_tensor,
@@ -207,19 +213,8 @@ class Qwen3TTS:
         voice,
         language_type="Auto",
         api_key="",
-        preview_voice=False
     ):
         """生成语音"""
-        
-        # 如果启用预览功能，直接返回预览音频
-        if preview_voice:
-            preview_audio = self.load_preview_audio(voice)
-            if preview_audio:
-                return (preview_audio,)
-            else:
-                # 如果预览加载失败，返回静音音频
-                silence = self._create_blank_audio()
-                return (silence,)
         
         # 获取API密钥
         api_key = self.get_dashscope_api_key(api_key)
@@ -278,30 +273,27 @@ class Qwen3TTS:
                         # 读取音频文件并转换为波形数据
                         sample_rate, waveform = wavfile.read(temp_file_path)
                         
-                        # 确保波形数据是float32格式
+                        # 确保波形数据是float32格式并归一化到[-1.0, 1.0]范围
                         if waveform.dtype != np.float32:
-                            # 如果是整数类型，转换为float32并归一化到[-1, 1]范围
                             if np.issubdtype(waveform.dtype, np.integer):
-                                max_val = np.max(np.abs(waveform))
-                                if max_val > 0:
-                                    waveform = waveform.astype(np.float32) / max_val
-                                else:
-                                    waveform = waveform.astype(np.float32)
+                                # 对于整数类型，使用类型的最大值进行归一化
+                                max_val = np.iinfo(waveform.dtype).max
+                                waveform = waveform.astype(np.float32) / max_val
                             else:
                                 waveform = waveform.astype(np.float32)
+                        
+                        # 确保数据在[-1.0, 1.0]范围内
+                        if np.max(np.abs(waveform)) > 1.0:
+                            waveform = waveform / np.max(np.abs(waveform))
                         
                         # 确保波形数据形状正确 [B, C, T]
                         if waveform.ndim == 1:
                             # 单声道，添加批次和声道维度 [1, 1, T]
                             waveform = waveform.reshape(1, 1, -1)
                         elif waveform.ndim == 2:
-                            # 已经是二维数组，可能是 [C, T] 或 [T, C]
-                            if waveform.shape[0] <= 2 and waveform.shape[0] < waveform.shape[1]:
-                                # 可能是 [C, T]，添加批次维度 [1, C, T]
-                                waveform = waveform.reshape(1, waveform.shape[0], -1)
-                            else:
-                                # 可能是 [T, C]，需要转置并添加批次维度 [1, C, T]
-                                waveform = waveform.T.reshape(1, -1, waveform.shape[0])
+                            # 处理二维数组，wavfile.read返回的形状通常是 [T, C]
+                            # 先转置为 [C, T]，然后添加批次维度 [1, C, T]
+                            waveform = waveform.T.reshape(1, waveform.shape[1], waveform.shape[0])
                         
                         # 转换为PyTorch张量
                         waveform_tensor = torch.from_numpy(waveform)
@@ -398,13 +390,22 @@ def setup_routes():
             
             # 确保波形形状正确 [T, C]
             if waveform.ndim == 3:
-                # 从 [B, C, T] 转换为 [T, C]
-                waveform = waveform[0].T  # 取第一个批次并转置
+                # 从 [B, C, T] 转换为 [C, T]
+                waveform = waveform[0]  # 取第一个批次
+                # 然后转置为 [T, C]
+                waveform = waveform.T
+            elif waveform.ndim == 1:
+                # 单声道，添加通道维度并转置 [T, 1]
+                waveform = waveform.reshape(-1, 1)
             
             # 确保数据类型是int16
             if waveform.dtype != np.int16:
+                # 检查数据范围并归一化
+                if np.max(np.abs(waveform)) > 1.0:
+                    # 如果数据已经不在[-1.0, 1.0]范围内，先归一化
+                    waveform = waveform / np.max(np.abs(waveform))
                 # 从float32 [-1.0, 1.0] 转换为 int16 [-32768, 32767]
-                waveform = (waveform * 32767).astype(np.int16)
+                waveform = np.clip(waveform * 32767, -32768, 32767).astype(np.int16)
             
             # 创建临时文件
             with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
