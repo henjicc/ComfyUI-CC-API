@@ -81,6 +81,7 @@ class MiniMaxVoiceClone:
                 prompt_file_id = self._upload_audio_file(prompt_audio, api_key, "prompt_audio")
                 if not prompt_file_id:
                     # print("Warning: Failed to upload prompt audio file, continuing without it")
+                    pass
             
             # 3. 调用音色克隆接口
             cloned_voice_id, demo_audio_url = self._call_voice_clone_api(
@@ -97,7 +98,6 @@ class MiniMaxVoiceClone:
             
             if not cloned_voice_id:
                 raise ValueError("Error: Failed to clone voice")
-                return (self._create_blank_audio(), "")
             
             # 4. 如果有试听音频URL，下载并返回音频
             demo_audio = self._create_blank_audio()
@@ -144,7 +144,7 @@ class MiniMaxVoiceClone:
                     wavfile.write(temp_filename, sample_rate, audio_int16)
                 else:
                     # print("Invalid audio data format")
-                raise ValueError("Invalid audio data format")
+                    raise ValueError("Invalid audio data format")
                     return None
             
             # 上传文件

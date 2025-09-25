@@ -11,6 +11,7 @@ node_list = [
     "qwen3_tts_node",
     "minimax_tts_node",
     "minimax_voice_clone_node",
+    "tools_node",
 ]
 
 NODE_CLASS_MAPPINGS = {}

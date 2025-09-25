@@ -1,6 +1,7 @@
 {
   "settingsCategories": {
     "CC-API": "CC-API",
-    "Image": "Image"
+    "Image": "Image",
+    "Audio": "Audio"
   }
 }

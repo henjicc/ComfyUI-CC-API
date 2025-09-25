@@ -383,5 +383,53 @@
         "tooltip": "Cloned voice ID string."
       }
     }
+  },
+  "RandomStringNode": {
+    "display_name": "Random String",
+    "description": "Generates random strings based on specified rules. Each execution produces a different random string.",
+    "inputs": {
+      "指定长度": {
+        "name": "Specified Length",
+        "tooltip": "Specified length. When set to 0, min/max length is used. When set to positive integer, min/max length is ignored. Minimum value is 1."
+      },
+      "最小长度": {
+        "name": "Min Length",
+        "tooltip": "Minimum length of generated string. Default is 8."
+      },
+      "最大长度": {
+        "name": "Max Length",
+        "tooltip": "Maximum length of generated string. Default is 256."
+      },
+      "生成指定内容": {
+        "name": "Specified Content",
+        "tooltip": "Custom content to be included in the result. Characters are split by whitespace. When empty, no specified content is included."
+      },
+      "生成数字": {
+        "name": "Generate Numbers",
+        "tooltip": "Whether to include numbers in the generated string. Default is on."
+      },
+      "生成大写字母": {
+        "name": "Generate Uppercase Letters",
+        "tooltip": "Whether to include uppercase letters in the generated string. Default is on."
+      },
+      "生成小写字母": {
+        "name": "Generate Lowercase Letters",
+        "tooltip": "Whether to include lowercase letters in the generated string. Default is on."
+      },
+      "首字母为英文": {
+        "name": "First Character as English",
+        "tooltip": "Whether the first character should be an English letter. Default is on."
+      },
+      "末尾不生成指定内容": {
+        "name": "Exclude Specified Content at End",
+        "tooltip": "Whether to exclude specified content at the end of the string. Default is on."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Random String",
+        "tooltip": "Generated random string."
+      }
+    }
   }
 }
