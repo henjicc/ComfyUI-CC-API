@@ -301,6 +301,16 @@
       "api_key": {
         "name": "API Key",
         "tooltip": "MiniMax API access key. Required to refresh voice list."
+      },
+      "voice_type": {
+        "name": "Voice Type",
+        "tooltip": "Select voice type to filter. 'all' for all voices, 'system' for system voices, 'voice_cloning' for cloned voices, 'voice_generation' for generated voices.",
+        "options": {
+          "all": "All Voices",
+          "system": "System Voices",
+          "voice_cloning": "Cloned Voices",
+          "voice_generation": "Generated Voices"
+        }
       }
     },
     "outputs": {

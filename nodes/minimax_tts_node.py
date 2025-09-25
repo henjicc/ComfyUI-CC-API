@@ -611,7 +611,7 @@ class MiniMaxVoiceSelector:
             print(f"Error saving voice data: {e}")
     
     @classmethod
-    def _fetch_voice_data(cls, api_key):
+    def _fetch_voice_data(cls, api_key, voice_type="all"):
         """从API获取音色数据"""
         if not api_key:
             print("Error: No MiniMax API key provided")
@@ -620,7 +620,7 @@ class MiniMaxVoiceSelector:
         try:
             # 准备请求数据
             request_data = {
-                "voice_type": "all"
+                "voice_type": voice_type
             }
             
             # 发送请求
@@ -692,6 +692,7 @@ class MiniMaxVoiceSelector:
                 "voice_name": (cls.voice_names if cls.voice_names else ["无可用音色"], {"default": cls.voice_names[0] if cls.voice_names else "无可用音色"}),
             },
             "optional": {
+                "voice_type": (["all", "system", "voice_cloning", "voice_generation"], {"default": "all"}),
                 "api_key": ("STRING", {"default": ""}),
             },
             "hidden": {
@@ -706,7 +707,7 @@ class MiniMaxVoiceSelector:
     FUNCTION = "select_voice"
     CATEGORY = "CC-API/Audio"
     
-    def select_voice(self, voice_name, api_key="", prompt=None, extra_pnginfo=None, unique_id=None):
+    def select_voice(self, voice_name, api_key="", voice_type="all", prompt=None, extra_pnginfo=None, unique_id=None):
         """选择音色并返回音色ID"""
         # 获取选中音色的ID
         voice_id = MiniMaxVoiceSelector.voice_mapping.get(voice_name, "")
@@ -728,6 +729,7 @@ async def refresh_minimax_voices(request):
         # 获取请求数据
         post_data = await request.json()
         api_key = post_data.get("api_key", "")
+        voice_type = post_data.get("voice_type", "all")
         
         if not api_key:
             # 返回错误响应
@@ -737,7 +739,7 @@ async def refresh_minimax_voices(request):
             })
         
         # 调用MiniMaxVoiceSelector类方法获取音色数据
-        voice_mapping = MiniMaxVoiceSelector._fetch_voice_data(api_key)
+        voice_mapping = MiniMaxVoiceSelector._fetch_voice_data(api_key, voice_type)
         
         if not voice_mapping:
             # 返回错误响应

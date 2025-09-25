@@ -47,6 +47,7 @@ app.registerExtension({
                     // 获取API密钥widget
                     const apiKeyWidget = this.widgets?.find(w => w.name === "api_key");
                     const voiceNameWidget = this.widgets?.find(w => w.name === "voice_name");
+                    const voiceTypeWidget = this.widgets?.find(w => w.name === "voice_type");
                     
                     if (!apiKeyWidget || !voiceNameWidget) {
                         alert("找不到必要的widgets");
@@ -58,6 +59,9 @@ app.registerExtension({
                         alert("请先输入API密钥");
                         return;
                     }
+                    
+                    // 获取voice_type参数，默认为all
+                    const voiceType = voiceTypeWidget ? voiceTypeWidget.value : "all";
                     
                     // 禁用按钮并显示加载状态
                     refreshButton.disabled = true;
@@ -72,7 +76,8 @@ app.registerExtension({
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({
-                                api_key: apiKey
+                                api_key: apiKey,
+                                voice_type: voiceType
                             })
                         });
                         

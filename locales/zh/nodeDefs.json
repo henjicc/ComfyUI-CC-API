@@ -372,6 +372,16 @@
       "api_key": {
         "name": "API密钥",
         "tooltip": "MiniMax API的访问密钥。刷新音色列表时需要提供。"
+      },
+      "voice_type": {
+        "name": "音色类型",
+        "tooltip": "选择音色类型进行筛选。'all'表示所有音色，'system'表示系统音色，'voice_cloning'表示复刻音色，'voice_generation'表示生成音色。",
+        "options": {
+          "all": "所有音色",
+          "system": "系统音色",
+          "voice_cloning": "复刻音色",
+          "voice_generation": "生成音色"
+        }
       }
     },
     "outputs": {
