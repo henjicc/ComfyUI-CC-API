@@ -12,6 +12,7 @@ node_list = [
     "minimax_tts_node",
     "minimax_voice_clone_node",
     "tools_node",
+    "doubao_tts_node",
 ]
 
 NODE_CLASS_MAPPINGS = {}

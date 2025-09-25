@@ -431,5 +431,103 @@
         "tooltip": "Generated random string."
       }
     }
+  },
+  "DoubaoTTS": {
+    "display_name": "Doubao TTS",
+    "description": "Doubao text-to-speech node based on Volcano Engine's Doubao TTS service, supporting multiple voices and languages, converts text into natural and fluent speech.",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text content to synthesize, supports multilingual mixed input. Maximum input is 10000 characters."
+      },
+      "voice": {
+        "name": "Voice",
+        "tooltip": "Select the voice for speech synthesis, supporting various voices in different languages."
+      },
+      "app_id": {
+        "name": "App ID",
+        "tooltip": "Doubao TTS service application ID. If not provided, will use the key from config file."
+      },
+      "access_key": {
+        "name": "Access Key",
+        "tooltip": "Doubao TTS service access key. If not provided, will use the key from config file."
+      },
+      "speed": {
+        "name": "Speed",
+        "tooltip": "Adjust speech playback speed, range -50-100, default value is 0."
+      },
+      "pitch": {
+        "name": "Pitch",
+        "tooltip": "Adjust speech pitch, range -12 to 12, default value is 0."
+      },
+      "volume": {
+        "name": "Volume",
+        "tooltip": "Adjust speech volume, range -50-100, default value is 0."
+      },
+      "emotion": {
+        "name": "Emotion",
+        "tooltip": "Select speech emotion, affects the emotional expression of the voice.",
+        "options": {
+          "happy": "Happy",
+          "sad": "Sad",
+          "angry": "Angry",
+          "fear": "Fear",
+          "hate": "Hate",
+          "excited": "Excited",
+          "coldness": "Coldness",
+          "neutral": "Neutral",
+          "depressed": "Depressed",
+          "lovey-dovey": "Lovey-dovey",
+          "shy": "Shy",
+          "comfort": "Comfort",
+          "tension": "Tension",
+          "tender": "Tender",
+          "storytelling": "Storytelling",
+          "radio": "Radio",
+          "magnetic": "Magnetic",
+          "advertising": "Advertising",
+          "vocal-fry": "Vocal Fry",
+          "asmr": "ASMR",
+          "news": "News",
+          "entertainment": "Entertainment",
+          "dialect": "Dialect",
+          "": "None"
+        }
+      },
+      "format": {
+        "name": "Audio Format",
+        "tooltip": "Select the output audio format.",
+        "options": {
+          "mp3": "MP3 - Compressed audio format",
+          "pcm": "PCM - Uncompressed audio format",
+          "ogg_opus": "OGG_OPUS - Efficient compressed audio format"
+        }
+      },
+      "sample_rate": {
+        "name": "Sample Rate",
+        "tooltip": "Select audio sample rate, affects audio quality and file size."
+      },
+      "channel": {
+        "name": "Channel",
+        "tooltip": "Select audio channel count, 1 for mono, 2 for stereo."
+      },
+      "resource_id": {
+        "name": "Resource ID",
+        "tooltip": "Select the speech synthesis model resource ID, different IDs correspond to different model versions.",
+        "options": {
+          "seed-tts-2.0": "Doubao TTS Model 2.0",
+          "seed-tts-1.0": "Doubao TTS Model 1.0",
+          "seed-tts-1.0-concurr": "Doubao TTS Model 1.0 Concurrent",
+          "volc.megatts.default": "Voice Cloning 2.0 Character Version",
+          "volc.megatts.concurr": "Voice Cloning 2.0 Concurrent Version"
+        }
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Audio",
+        "tooltip": "Generated audio file."
+      }
+    }
   }
 }

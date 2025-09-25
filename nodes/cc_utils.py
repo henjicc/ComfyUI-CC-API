@@ -19,6 +19,8 @@ class CCConfig:
     _instance = None
     _key = None
     _minimax_key = None
+    _doubao_app_id = None
+    _doubao_access_key = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -55,7 +57,6 @@ class CCConfig:
         except KeyError:
             print("Error: API_KEY not found in config.ini or environment variables")
             
-        # Initialize MiniMax API key
         try:
             if os.environ.get("MINIMAX_API_KEY") is not None:
                 self._minimax_key = os.environ["MINIMAX_API_KEY"]
@@ -66,6 +67,29 @@ class CCConfig:
         except KeyError:
             # MiniMax key is optional, so we don't print an error
             self._minimax_key = None
+            
+        # Initialize Doubao API credentials
+        try:
+            if os.environ.get("DOUBAO_APP_ID") is not None:
+                self._doubao_app_id = os.environ["DOUBAO_APP_ID"]
+            else:
+                self._doubao_app_id = config["doubao"]["APP_ID"]
+                if self._doubao_app_id != "<your_doubao_app_id_here>":
+                    os.environ["DOUBAO_APP_ID"] = self._doubao_app_id
+        except KeyError:
+            # Doubao credentials are optional
+            self._doubao_app_id = None
+            
+        try:
+            if os.environ.get("DOUBAO_ACCESS_KEY") is not None:
+                self._doubao_access_key = os.environ["DOUBAO_ACCESS_KEY"]
+            else:
+                self._doubao_access_key = config["doubao"]["ACCESS_KEY"]
+                if self._doubao_access_key != "<your_doubao_access_key_here>":
+                    os.environ["DOUBAO_ACCESS_KEY"] = self._doubao_access_key
+        except KeyError:
+            # Doubao credentials are optional
+            self._doubao_access_key = None
 
     def get_key(self):
         """Get the API key for volcengine."""
@@ -79,6 +103,24 @@ class CCConfig:
         
         # Return the stored key
         return self._minimax_key
+
+    def get_doubao_app_id(self):
+        """Get the App ID for Doubao."""
+        # First check if Doubao App ID is provided as environment variable
+        if os.environ.get("DOUBAO_APP_ID") is not None:
+            return os.environ["DOUBAO_APP_ID"]
+        
+        # Return the stored App ID
+        return self._doubao_app_id
+
+    def get_doubao_access_key(self):
+        """Get the Access Key for Doubao."""
+        # First check if Doubao Access Key is provided as environment variable
+        if os.environ.get("DOUBAO_ACCESS_KEY") is not None:
+            return os.environ["DOUBAO_ACCESS_KEY"]
+        
+        # Return the stored Access Key
+        return self._doubao_access_key
 
 
 class ImageUtils:
