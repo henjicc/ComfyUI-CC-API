@@ -18,6 +18,7 @@ class CCConfig:
 
     _instance = None
     _key = None
+    _minimax_key = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -53,10 +54,31 @@ class CCConfig:
                 print("2. Or as an environment variable named VOLCENGINE_API_KEY")
         except KeyError:
             print("Error: API_KEY not found in config.ini or environment variables")
+            
+        # Initialize MiniMax API key
+        try:
+            if os.environ.get("MINIMAX_API_KEY") is not None:
+                self._minimax_key = os.environ["MINIMAX_API_KEY"]
+            else:
+                self._minimax_key = config["minimax"]["API_KEY"]
+                if self._minimax_key != "<your_minimax_api_key_here>":
+                    os.environ["MINIMAX_API_KEY"] = self._minimax_key
+        except KeyError:
+            # MiniMax key is optional, so we don't print an error
+            self._minimax_key = None
 
     def get_key(self):
         """Get the API key for volcengine."""
         return self._key
+
+    def get_minimax_key(self):
+        """Get the API key for MiniMax."""
+        # First check if MiniMax API key is provided as environment variable
+        if os.environ.get("MINIMAX_API_KEY") is not None:
+            return os.environ["MINIMAX_API_KEY"]
+        
+        # Return the stored key
+        return self._minimax_key
 
 
 class ImageUtils:

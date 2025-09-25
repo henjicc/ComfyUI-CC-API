@@ -63,7 +63,8 @@ class MiniMaxVoiceClone:
         
         # 检查API密钥
         if not api_key:
-            api_key = CCConfig().get_key()
+            # 尝试从配置文件获取API密钥
+            api_key = CCConfig().get_minimax_key()
             if not api_key:
                 raise ValueError("Error: No MiniMax API key provided")
                 return (self._create_blank_audio(), "")

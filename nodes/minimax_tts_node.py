@@ -427,8 +427,11 @@ class MiniMaxTTS:
         
         # 检查API密钥
         if not api_key:
-            print("Error: No MiniMax API key provided")
-            return self._create_blank_audio(sample_rate)
+            # 尝试从配置文件获取API密钥
+            api_key = CCConfig().get_minimax_key()
+            if not api_key:
+                print("Error: No MiniMax API key provided")
+                return self._create_blank_audio(sample_rate)
         
         # 检查文本长度
         if len(text) > 10000:
@@ -621,8 +624,11 @@ class MiniMaxVoiceSelector:
     def _fetch_voice_data(cls, api_key, voice_type="all"):
         """从API获取音色数据"""
         if not api_key:
-            print("Error: No MiniMax API key provided")
-            return {}
+            # 尝试从配置文件获取API密钥
+            api_key = CCConfig().get_minimax_key()
+            if not api_key:
+                print("Error: No MiniMax API key provided")
+                return {}
         
         try:
             # 准备请求数据
