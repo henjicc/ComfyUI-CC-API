@@ -227,6 +227,10 @@
           "speech-01-turbo": "speech-01-turbo - Standard high-speed version"
         }
       },
+      "voice_id": {
+        "name": "Voice ID",
+        "tooltip": "Voice ID input port. When connected, the 'Voice' selector selection will be ignored."
+      },
       "speed": {
         "name": "Speed",
         "tooltip": "Adjust speech playback speed, range 0.5-2.0, default value is 1.0."

@@ -388,6 +388,7 @@ class MiniMaxTTS:
                 "model": (cls.MODEL_LIST, {"default": "speech-2.5-turbo-preview"}),
             },
             "optional": {
+                "voice_id": ("STRING", {"forceInput": True, "tooltip": "音色ID输入端口。当连接此端口时，将忽略'音色'选择器的选择。"}),  # 添加音色ID输入端口
                 "speed": ("FLOAT", {"default": 1.0, "min": 0.5, "max": 2.0, "step": 0.1}),
                 "vol": ("FLOAT", {"default": 1.0, "min": 0.1, "max": 10.0, "step": 0.1}),
                 "pitch": ("INT", {"default": 0, "min": -12, "max": 12, "step": 1}),
@@ -410,6 +411,7 @@ class MiniMaxTTS:
         text,
         voice,
         model,
+        voice_id="",  # 添加音色ID参数
         speed=1.0,
         vol=1.0,
         pitch=0,
@@ -433,8 +435,13 @@ class MiniMaxTTS:
             print("Warning: Text exceeds maximum length of 10000 characters. Truncating...")
             text = text[:10000]
         
-        # 将中文显示名称转换为API所需的音色ID
-        voice_id = self.VOICE_NAME_TO_ID.get(voice, voice)
+        # 如果提供了voice_id，则使用它；否则使用voice参数转换的音色ID
+        if voice_id:
+            # 使用直接提供的音色ID
+            selected_voice_id = voice_id
+        else:
+            # 将中文显示名称转换为API所需的音色ID
+            selected_voice_id = self.VOICE_NAME_TO_ID.get(voice, voice)
         
         # 准备请求数据
         request_data = {
@@ -442,7 +449,7 @@ class MiniMaxTTS:
             "text": text,
             "stream": False,  # 使用非流式同步语音合成
             "voice_setting": {
-                "voice_id": voice_id,
+                "voice_id": selected_voice_id,
                 "speed": speed,
                 "vol": vol,
                 "pitch": pitch,

@@ -298,6 +298,10 @@
           "speech-01-turbo": "speech-01-turbo - 标准高速版"
         }
       },
+      "voice_id": {
+        "name": "音色ID",
+        "tooltip": "音色ID输入端口。当连接此端口时，将忽略'音色'选择器的选择。"
+      },
       "speed": {
         "name": "语速",
         "tooltip": "调整语音播放速度，范围0.5-2.0，默认值为1.0。"
