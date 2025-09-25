@@ -360,5 +360,25 @@
         "tooltip": "生成的音频文件。"
       }
     }
+  },
+  "MiniMaxVoiceSelector": {
+    "display_name": "MiniMax 音色选择器",
+    "description": "MiniMax音色选择器节点，从API获取可用音色列表，用户可通过名称选择音色，输出对应的音色ID。",
+    "inputs": {
+      "voice_name": {
+        "name": "音色名称",
+        "tooltip": "从下拉列表中选择音色名称。点击'刷新音色列表'按钮可更新列表。"
+      },
+      "api_key": {
+        "name": "API密钥",
+        "tooltip": "MiniMax API的访问密钥。刷新音色列表时需要提供。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "音色ID",
+        "tooltip": "选中的音色ID字符串。"
+      }
+    }
   }
 }

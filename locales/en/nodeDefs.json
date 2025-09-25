@@ -289,5 +289,25 @@
         "tooltip": "Generated audio file."
       }
     }
+  },
+  "MiniMaxVoiceSelector": {
+    "display_name": "MiniMax Voice Selector",
+    "description": "MiniMax voice selector node, fetches available voices from API and allows user to select voice by name, outputs corresponding voice ID.",
+    "inputs": {
+      "voice_name": {
+        "name": "Voice Name",
+        "tooltip": "Select voice name from the dropdown list. Click 'Refresh Voice List' button to update the list."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "MiniMax API access key. Required to refresh voice list."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Voice ID",
+        "tooltip": "Selected voice ID string."
+      }
+    }
   }
 }

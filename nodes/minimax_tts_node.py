@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from scipy.io import wavfile
 import server
+from aiohttp import web
 from .cc_utils import CCConfig
 
 class MiniMaxTTS:
@@ -563,11 +564,212 @@ class MiniMaxTTS:
         },)
 
 
+class MiniMaxVoiceSelector:
+    """MiniMax音色选择器节点"""
+    
+    # 音色数据文件路径
+    VOICE_DATA_FILE = os.path.join(os.path.dirname(__file__), "minimax_voices.json")
+    
+    # 类变量存储音色数据
+    voice_mapping = {}
+    voice_names = []
+    
+    @classmethod
+    def _load_voice_data(cls):
+        """从本地JSON文件加载音色数据"""
+        try:
+            if os.path.exists(cls.VOICE_DATA_FILE):
+                with open(cls.VOICE_DATA_FILE, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                    cls.voice_mapping = data.get('voice_mapping', {})
+                    cls.voice_names = list(cls.voice_mapping.keys()) if cls.voice_mapping else []
+            else:
+                # 如果文件不存在，初始化为空数据
+                cls.voice_mapping = {}
+                cls.voice_names = []
+        except Exception as e:
+            print(f"Error loading voice data: {e}")
+            cls.voice_mapping = {}
+            cls.voice_names = []
+    
+    @classmethod
+    def _save_voice_data(cls, voice_data):
+        """保存音色数据到本地JSON文件"""
+        try:
+            # 重新组织数据结构以便保存
+            data = {
+                'voice_mapping': voice_data,
+                'updated_at': np.datetime_as_string(np.datetime64('now'))
+            }
+            
+            with open(cls.VOICE_DATA_FILE, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+                
+            # 重新加载数据
+            cls._load_voice_data()
+        except Exception as e:
+            print(f"Error saving voice data: {e}")
+    
+    @classmethod
+    def _fetch_voice_data(cls, api_key):
+        """从API获取音色数据"""
+        if not api_key:
+            print("Error: No MiniMax API key provided")
+            return {}
+        
+        try:
+            # 准备请求数据
+            request_data = {
+                "voice_type": "all"
+            }
+            
+            # 发送请求
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            response = requests.post(
+                "https://api.minimaxi.com/v1/get_voice",
+                headers=headers,
+                json=request_data
+            )
+            
+            if response.status_code == 200:
+                result = response.json()
+                
+                # 检查响应状态
+                if result.get("base_resp", {}).get("status_code", -1) == 0:
+                    # 解析音色数据
+                    voice_mapping = {}
+                    
+                    # 处理系统音色
+                    system_voices = result.get("system_voice", [])
+                    for voice in system_voices:
+                        voice_name = voice.get("voice_name", "")
+                        voice_id = voice.get("voice_id", "")
+                        if voice_name and voice_id:
+                            voice_mapping[voice_name] = voice_id
+                    
+                    # 处理快速复刻音色
+                    cloning_voices = result.get("voice_cloning", [])
+                    for voice in cloning_voices:
+                        voice_id = voice.get("voice_id", "")
+                        # 使用voice_id作为名称，因为可能没有voice_name
+                        if voice_id:
+                            voice_mapping[f"快速复刻 - {voice_id}"] = voice_id
+                    
+                    # 处理文生音色
+                    generation_voices = result.get("voice_generation", [])
+                    for voice in generation_voices:
+                        voice_id = voice.get("voice_id", "")
+                        # 使用voice_id作为名称，因为可能没有voice_name
+                        if voice_id:
+                            voice_mapping[f"文生音色 - {voice_id}"] = voice_id
+                    
+                    # 保存数据到本地
+                    cls._save_voice_data(voice_mapping)
+                    return voice_mapping
+                else:
+                    status_msg = result.get("base_resp", {}).get("status_msg", "Unknown error")
+                    print(f"API request failed: {status_msg}")
+                    return {}
+            else:
+                print(f"API request failed with status {response.status_code}: {response.text}")
+                return {}
+        except Exception as e:
+            print(f"Error fetching voice data: {str(e)}")
+            return {}
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        """定义节点输入类型"""
+        # 加载音色数据
+        cls._load_voice_data()
+        
+        return {
+            "required": {
+                "voice_name": (cls.voice_names if cls.voice_names else ["无可用音色"], {"default": cls.voice_names[0] if cls.voice_names else "无可用音色"}),
+            },
+            "optional": {
+                "api_key": ("STRING", {"default": ""}),
+            },
+            "hidden": {
+                "prompt": "PROMPT",
+                "extra_pnginfo": "EXTRA_PNGINFO",
+                "unique_id": "UNIQUE_ID",
+            }
+        }
+    
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("voice_id",)
+    FUNCTION = "select_voice"
+    CATEGORY = "CC-API/Audio"
+    
+    def select_voice(self, voice_name, api_key="", prompt=None, extra_pnginfo=None, unique_id=None):
+        """选择音色并返回音色ID"""
+        # 获取选中音色的ID
+        voice_id = MiniMaxVoiceSelector.voice_mapping.get(voice_name, "")
+        
+        if not voice_id:
+            print(f"Warning: Voice ID not found for '{voice_name}'")
+            # 如果找不到对应的ID，返回空字符串
+            return ("",)
+        
+        # 返回音色ID
+        return (voice_id,)
+
+
+# 添加API端点用于刷新音色列表
+@server.PromptServer.instance.routes.post("/minimax_refresh_voices")
+async def refresh_minimax_voices(request):
+    """处理刷新MiniMax音色列表的请求"""
+    try:
+        # 获取请求数据
+        post_data = await request.json()
+        api_key = post_data.get("api_key", "")
+        
+        if not api_key:
+            # 返回错误响应
+            return web.json_response({
+                "status": "error", 
+                "error": "API密钥不能为空"
+            })
+        
+        # 调用MiniMaxVoiceSelector类方法获取音色数据
+        voice_mapping = MiniMaxVoiceSelector._fetch_voice_data(api_key)
+        
+        if not voice_mapping:
+            # 返回错误响应
+            return web.json_response({
+                "status": "error", 
+                "error": "无法获取音色数据"
+            })
+        
+        # 返回成功响应和音色名称列表
+        voice_names = list(voice_mapping.keys())
+        return web.json_response({
+            "status": "success",
+            "voice_names": voice_names,
+            "count": len(voice_names)
+        })
+        
+    except Exception as e:
+        print(f"Error refreshing voices: {e}")
+        # 返回错误响应
+        return web.json_response({
+            "status": "error", 
+            "error": str(e)
+        })
+
+
 # 注册节点
 NODE_CLASS_MAPPINGS = {
     "MiniMaxTTS": MiniMaxTTS,
+    "MiniMaxVoiceSelector": MiniMaxVoiceSelector,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "MiniMaxTTS": "MiniMax TTS",
+    "MiniMaxVoiceSelector": "MiniMax Voice Selector",
 }
