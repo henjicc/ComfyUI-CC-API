@@ -255,7 +255,7 @@ class DoubaoTTS:
             }
         }
     
-    RETURN_TYPES = ("AUDIO")  # 添加STRING返回类型
+    RETURN_TYPES = ("AUDIO",)  # 添加STRING返回类型
     # RETURN_NAMES = ("audio", "debug_info")  # 添加返回名称，开启次选项，上方需要设置为RETURN_TYPES = ("AUDIO", "STRING") 
     FUNCTION = "generate_speech"
     CATEGORY = "CC-API/Audio"
