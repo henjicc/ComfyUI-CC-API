@@ -510,17 +510,6 @@
       "channel": {
         "name": "Channel",
         "tooltip": "Select audio channel count, 1 for mono, 2 for stereo."
-      },
-      "resource_id": {
-        "name": "Resource ID",
-        "tooltip": "Select the speech synthesis model resource ID, different IDs correspond to different model versions.",
-        "options": {
-          "seed-tts-2.0": "Doubao TTS Model 2.0",
-          "seed-tts-1.0": "Doubao TTS Model 1.0",
-          "seed-tts-1.0-concurr": "Doubao TTS Model 1.0 Concurrent",
-          "volc.megatts.default": "Voice Cloning 2.0 Character Version",
-          "volc.megatts.concurr": "Voice Cloning 2.0 Concurrent Version"
-        }
       }
     },
     "outputs": {

@@ -580,17 +580,6 @@
       "channel": {
         "name": "声道数",
         "tooltip": "选择音频声道数，1为单声道，2为立体声。"
-      },
-      "resource_id": {
-        "name": "资源ID",
-        "tooltip": "选择语音合成模型资源ID，不同ID对应不同的模型版本。",
-        "options": {
-          "seed-tts-2.0": "豆包语音合成模型2.0",
-          "seed-tts-1.0": "豆包语音合成模型1.0",
-          "seed-tts-1.0-concurr": "豆包语音合成模型1.0并发版",
-          "volc.megatts.default": "声音复刻2.0字符版",
-          "volc.megatts.concurr": "声音复刻2.0并发版"
-        }
       }
     },
     "outputs": {
