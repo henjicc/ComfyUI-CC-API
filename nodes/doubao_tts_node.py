@@ -12,157 +12,190 @@ from .cc_utils import CCConfig
 class DoubaoTTS:
     """豆包语音合成节点"""
     
-    # 定义音色映射表：音色名称 -> (voice_type, resource_id)
-    VOICE_MAP = {
-        # 豆包语音合成模型2.0音色
-        "vivi": ("zh_female_vv_uranus_bigtts", "seed-tts-2.0"),
-        "小何": ("zh_female_xiaohe_jupiter_bigtts", "seed-tts-2.0"),
-        "云舟": ("zh_male_yunzhou_jupiter_bigtts", "seed-tts-2.0"),
-        "小天": ("zh_male_xiaotian_jupiter_bigtts", "seed-tts-2.0"),
+    def __init__(self):
+        """初始化节点，从JSON文件加载音色映射"""
+        # 获取当前文件所在目录
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # 构建JSON文件路径
+        json_file_path = os.path.join(current_dir, 'doubao_voices.json')
         
-        # 豆包语音合成模型1.0音色（多情感）
-        "冷酷哥哥（多情感）": ("zh_male_lengkugege_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "甜心小美（多情感）": ("zh_female_tianxinxiaomei_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "高冷御姐（多情感）": ("zh_female_gaolengyujie_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "傲娇霸总（多情感）": ("zh_male_aojiaobazong_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "广州德哥（多情感）": ("zh_male_guangzhoudege_emo_mars_bigtts", "seed-tts-1.0"),
-        "京腔侃爷（多情感）": ("zh_male_jingqiangkanye_emo_mars_bigtts", "seed-tts-1.0"),
-        "邻居阿姨（多情感）": ("zh_female_linjuayi_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "优柔公子（多情感）": ("zh_male_yourougongzi_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "儒雅男友（多情感）": ("zh_male_ruyayichen_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "俊朗男友（多情感）": ("zh_male_junlangnanyou_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "北京小爷（多情感）": ("zh_male_beijingxiaoye_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "柔美女友（多情感）": ("zh_female_roumeinvyou_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "阳光青年（多情感）": ("zh_male_yangguangqingnian_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "魅力女友（多情感）": ("zh_female_meilinvyou_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "爽快思思（多情感）": ("zh_female_shuangkuaisisi_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Candice": ("en_female_candice_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Serena": ("en_female_skye_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Glen": ("en_male_glen_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Sylus": ("en_male_sylus_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Corey": ("en_male_corey_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Nadia": ("en_female_nadia_tips_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "Tina老师": ("zh_female_yingyujiaoyu_mars_bigtts", "seed-tts-1.0"),
+        # 从JSON文件加载音色映射
+        self.VOICE_MAP = {}
+        self.VOICE_CATEGORIES = {}
         
-        # 豆包语音合成模型1.0音色
-        "Vivi": ("zh_female_vv_mars_bigtts", "seed-tts-1.0"),
-        "亲切女声": ("zh_female_qinqienvsheng_moon_bigtts", "seed-tts-1.0"),
-        "阳光阿辰": ("zh_male_qingyiyuxuan_mars_bigtts", "seed-tts-1.0"),
-        "快乐小东": ("zh_male_xudong_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "阳光青年": ("zh_male_yangguangqingnian_moon_bigtts", "seed-tts-1.0"),
-        "甜美桃子": ("zh_female_tianmeitaozi_mars_bigtts", "seed-tts-1.0"),
-        "清新女声": ("zh_female_qingxinnvsheng_mars_bigtts", "seed-tts-1.0"),
-        "知性女声": ("zh_female_zhixingnvsheng_mars_bigtts", "seed-tts-1.0"),
-        "清爽男大": ("zh_male_qingshuangnanda_mars_bigtts", "seed-tts-1.0"),
-        "邻家女孩": ("zh_female_linjianvhai_moon_bigtts", "seed-tts-1.0"),
-        "渊博小叔": ("zh_male_yuanboxiaoshu_moon_bigtts", "seed-tts-1.0"),
-        "甜美小源": ("zh_female_tianmeixiaoyuan_moon_bigtts", "seed-tts-1.0"),
-        "清澈梓梓": ("zh_female_qingchezizi_moon_bigtts", "seed-tts-1.0"),
-        "解说小明": ("zh_male_jieshuoxiaoming_moon_bigtts", "seed-tts-1.0"),
-        "开朗姐姐": ("zh_female_kailangjiejie_moon_bigtts", "seed-tts-1.0"),
-        "邻家男孩": ("zh_male_linjiananhai_moon_bigtts", "seed-tts-1.0"),
-        "甜美悦悦": ("zh_female_tianmeiyueyue_moon_bigtts", "seed-tts-1.0"),
-        "心灵鸡汤": ("zh_female_xinlingjitang_moon_bigtts", "seed-tts-1.0"),
-        "温柔小哥": ("zh_male_wenrouxiaoge_mars_bigtts", "seed-tts-1.0"),
-        "灿灿/Shiny": ("zh_female_cancan_mars_bigtts", "seed-tts-1.0"),
-        "爽快思思/Skye": ("zh_female_shuangkuaisisi_moon_bigtts", "seed-tts-1.0"),
-        "温暖阿虎/Alvin": ("zh_male_wennuanahu_moon_bigtts", "seed-tts-1.0"),
-        "少年梓辛/Brayan": ("zh_male_shaonianzixin_moon_bigtts", "seed-tts-1.0"),
-        "沪普男": ("zh_male_hupunan_mars_bigtts", "seed-tts-1.0"),
-        "鲁班七号": ("zh_male_lubanqihao_mars_bigtts", "seed-tts-1.0"),
-        "林潇": ("zh_female_yangmi_mars_bigtts", "seed-tts-1.0"),
-        "玲玲姐姐": ("zh_female_linzhiling_mars_bigtts", "seed-tts-1.0"),
-        "春日部姐姐": ("zh_female_jiyejizi2_mars_bigtts", "seed-tts-1.0"),
-        "唐僧": ("zh_male_tangseng_mars_bigtts", "seed-tts-1.0"),
-        "庄周": ("zh_male_zhuangzhou_mars_bigtts", "seed-tts-1.0"),
-        "猪八戒": ("zh_male_zhubajie_mars_bigtts", "seed-tts-1.0"),
-        "感冒电音姐姐": ("zh_female_ganmaodianyin_mars_bigtts", "seed-tts-1.0"),
-        "直率英子": ("zh_female_naying_mars_bigtts", "seed-tts-1.0"),
-        "女雷神": ("zh_female_leidian_mars_bigtts", "seed-tts-1.0"),
-        "豫州子轩": ("zh_male_yuzhouzixuan_moon_bigtts", "seed-tts-1.0"),
-        "呆萌川妹": ("zh_female_daimengchuanmei_moon_bigtts", "seed-tts-1.0"),
-        "广西远舟": ("zh_male_guangxiyuanzhou_moon_bigtts", "seed-tts-1.0"),
-        "双节棍小哥": ("zh_male_zhoujielun_emo_v2_mars_bigtts", "seed-tts-1.0"),
-        "湾湾小何": ("zh_female_wanwanxiaohe_moon_bigtts", "seed-tts-1.0"),
-        "湾区大叔": ("zh_female_wanqudashu_moon_bigtts", "seed-tts-1.0"),
-        "广州德哥": ("zh_male_guozhoudege_moon_bigtts", "seed-tts-1.0"),
-        "浩宇小哥": ("zh_male_haoyuxiaoge_moon_bigtts", "seed-tts-1.0"),
-        "北京小爷": ("zh_male_beijingxiaoye_moon_bigtts", "seed-tts-1.0"),
-        "京腔侃爷/Harmony": ("zh_male_jingqiangkanye_moon_bigtts", "seed-tts-1.0"),
-        "妹坨洁儿": ("zh_female_meituojieer_moon_bigtts", "seed-tts-1.0"),
-        "高冷御姐": ("zh_female_gaolengyujie_moon_bigtts", "seed-tts-1.0"),
-        "傲娇霸总": ("zh_male_aojiaobazong_moon_bigtts", "seed-tts-1.0"),
-        "魅力女友": ("zh_female_meilinvyou_moon_bigtts", "seed-tts-1.0"),
-        "深夜播客": ("zh_male_shenyeboke_moon_bigtts", "seed-tts-1.0"),
-        "柔美女友": ("zh_female_sajiaonvyou_moon_bigtts", "seed-tts-1.0"),
-        "撒娇学妹": ("zh_female_yuanqinvyou_moon_bigtts", "seed-tts-1.0"),
-        "东方浩然": ("zh_male_dongfanghaoran_moon_bigtts", "seed-tts-1.0"),
-        "悠悠君子": ("zh_male_M100_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "文静毛毛": ("zh_female_maomao_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "温柔小雅": ("zh_female_wenrouxiaoya_moon_bigtts", "seed-tts-1.0"),
-        "天才童声": ("zh_male_tiancaitongsheng_mars_bigtts", "seed-tts-1.0"),
-        "猴哥": ("zh_male_sunwukong_mars_bigtts", "seed-tts-1.0"),
-        "熊二": ("zh_male_xionger_mars_bigtts", "seed-tts-1.0"),
-        "佩奇猪": ("zh_female_peiqi_mars_bigtts", "seed-tts-1.0"),
-        "武则天": ("zh_female_wuzetian_mars_bigtts", "seed-tts-1.0"),
-        "顾姐": ("zh_female_gujie_mars_bigtts", "seed-tts-1.0"),
-        "樱桃丸子": ("zh_female_yingtaowanzi_mars_bigtts", "seed-tts-1.0"),
-        "广告解说": ("zh_male_chunhui_mars_bigtts", "seed-tts-1.0"),
-        "少儿故事": ("zh_female_shaoergushi_mars_bigtts", "seed-tts-1.0"),
-        "四郎": ("zh_male_silang_mars_bigtts", "seed-tts-1.0"),
-        "俏皮女声": ("zh_female_qiaopinvsheng_mars_bigtts", "seed-tts-1.0"),
-        "懒音绵宝": ("zh_male_lanxiaoyang_mars_bigtts", "seed-tts-1.0"),
-        "亮嗓萌仔": ("zh_male_dongmanhaimian_mars_bigtts", "seed-tts-1.0"),
-        "磁性解说男声/Morgan": ("zh_male_jieshuonansheng_mars_bigtts", "seed-tts-1.0"),
-        "鸡汤妹妹/Hope": ("zh_female_jitangmeimei_mars_bigtts", "seed-tts-1.0"),
-        "贴心女声/Candy": ("zh_female_tiexinnvsheng_mars_bigtts", "seed-tts-1.0"),
-        "萌丫头/Cutey": ("zh_female_mengyatou_mars_bigtts", "seed-tts-1.0"),
-        "儒雅青年": ("zh_male_ruyaqingnian_mars_bigtts", "seed-tts-1.0"),
-        "霸气青叔": ("zh_male_baqiqingshu_mars_bigtts", "seed-tts-1.0"),
-        "擎苍": ("zh_male_qingcang_mars_bigtts", "seed-tts-1.0"),
-        "活力小哥": ("zh_male_yangguangqingnian_mars_bigtts", "seed-tts-1.0"),
-        "古风少御": ("zh_female_gufengshaoyu_mars_bigtts", "seed-tts-1.0"),
-        "温柔淑女": ("zh_female_wenroushunv_mars_bigtts", "seed-tts-1.0"),
-        "反卷青年": ("zh_male_fanjuanqingnian_mars_bigtts", "seed-tts-1.0"),
-        
-        # 英文音色
-        "Adam": ("en_male_adam_mars_bigtts", "seed-tts-1.0"),
-        "Amanda": ("en_female_amanda_mars_bigtts", "seed-tts-1.0"),
-        "Jackson": ("en_male_jackson_mars_bigtts", "seed-tts-1.0"),
-        "Emily": ("en_female_emily_mars_bigtts", "seed-tts-1.0"),
-        "Smith": ("en_male_smith_mars_bigtts", "seed-tts-1.0"),
-        "Anna": ("en_female_anna_mars_bigtts", "seed-tts-1.0"),
-        "Delicate Girl": ("en_female_daisy_moon_bigtts", "seed-tts-1.0"),
-        "Dave": ("en_male_dave_moon_bigtts", "seed-tts-1.0"),
-        "Hades": ("en_male_hades_moon_bigtts", "seed-tts-1.0"),
-        "Onez": ("en_female_onez_moon_bigtts", "seed-tts-1.0"),
-        "Sarah": ("en_female_sarah_mars_bigtts", "seed-tts-1.0"),
-        "Dryw": ("en_male_dryw_mars_bigtts", "seed-tts-1.0"),
-        
-        # 日文音色
-        "さとみ（智美）": ("multi_female_sophie_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "まさお（正男）": ("multi_male_xudong_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "つき（月）": ("multi_female_maomao_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "あけみ（朱美）": ("multi_female_gaolengyujie_moon_bigtts", "seed-tts-1.0"),
-        
-        # 韩文音色
-        "Sweet Girl": ("ko_female_sweet_girl", "seed-tts-1.0"),
-        
-        # 西班牙文音色
-        "Serene Woman": ("es_female_serene_woman", "seed-tts-1.0"),
-        
-        # 其他音色
-        "Lucas": ("zh_male_M100_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "Sophie": ("zh_female_sophie_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "Daniel": ("zh_male_xudong_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "Diana": ("zh_female_maomao_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "Daisy": ("en_female_dacey_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "Owen": ("en_male_charlie_conversation_wvae_bigtts", "seed-tts-1.0"),
-        "Luna": ("en_female_sarah_new_conversation_wvae_bigtts", "seed-tts-1.0"),
-    }
+        try:
+            with open(json_file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                voices = data.get('voice_categories', {})  # 修正这里，使用'voice_categories'而不是'voices'
+                
+                # 将嵌套的音色分类结构扁平化为VOICE_MAP
+                for category, voice_dict in voices.items():
+                    self.VOICE_CATEGORIES[category] = list(voice_dict.keys())
+                    for voice_name, voice_info in voice_dict.items():
+                        self.VOICE_MAP[voice_name] = voice_info
+                        
+        except FileNotFoundError:
+            print(f"Warning: Could not find voice mapping file at {json_file_path}")
+            # 如果找不到JSON文件，使用默认的音色映射
+            self._load_default_voices()
+        except Exception as e:
+            print(f"Error loading voice mapping from JSON: {str(e)}")
+            # 如果加载JSON文件出错，使用默认的音色映射
+            self._load_default_voices()
     
-    # 定义可用的音色名称列表（用于显示）
-    VOICE_NAMES = list(VOICE_MAP.keys())
+    def _load_default_voices(self):
+        """加载默认音色映射（当JSON文件不可用时）"""
+        # 定义音色映射表：音色名称 -> (voice_type, resource_id)
+        self.VOICE_MAP = {
+            # 豆包语音合成模型2.0音色
+            "vivi": ("zh_female_vv_uranus_bigtts", "seed-tts-2.0"),
+            "小何": ("zh_female_xiaohe_jupiter_bigtts", "seed-tts-2.0"),
+            "云舟": ("zh_male_yunzhou_jupiter_bigtts", "seed-tts-2.0"),
+            "小天": ("zh_male_xiaotian_jupiter_bigtts", "seed-tts-2.0"),
+            
+            # 豆包语音合成模型1.0音色（多情感）
+            "冷酷哥哥（多情感）": ("zh_male_lengkugege_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "甜心小美（多情感）": ("zh_female_tianxinxiaomei_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "高冷御姐（多情感）": ("zh_female_gaolengyujie_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "傲娇霸总（多情感）": ("zh_male_aojiaobazong_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "广州德哥（多情感）": ("zh_male_guangzhoudege_emo_mars_bigtts", "seed-tts-1.0"),
+            "京腔侃爷（多情感）": ("zh_male_jingqiangkanye_emo_mars_bigtts", "seed-tts-1.0"),
+            "邻居阿姨（多情感）": ("zh_female_linjuayi_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "优柔公子（多情感）": ("zh_male_yourougongzi_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "儒雅男友（多情感）": ("zh_male_ruyayichen_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "俊朗男友（多情感）": ("zh_male_junlangnanyou_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "北京小爷（多情感）": ("zh_male_beijingxiaoye_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "柔美女友（多情感）": ("zh_female_roumeinvyou_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "阳光青年（多情感）": ("zh_male_yangguangqingnian_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "魅力女友（多情感）": ("zh_female_meilinvyou_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "爽快思思（多情感）": ("zh_female_shuangkuaisisi_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Candice": ("en_female_candice_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Serena": ("en_female_skye_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Glen": ("en_male_glen_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Sylus": ("en_male_sylus_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Corey": ("en_male_corey_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Nadia": ("en_female_nadia_tips_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "Tina老师": ("zh_female_yingyujiaoyu_mars_bigtts", "seed-tts-1.0"),
+            
+            # 豆包语音合成模型1.0音色
+            "Vivi": ("zh_female_vv_mars_bigtts", "seed-tts-1.0"),
+            "亲切女声": ("zh_female_qinqienvsheng_moon_bigtts", "seed-tts-1.0"),
+            "阳光阿辰": ("zh_male_qingyiyuxuan_mars_bigtts", "seed-tts-1.0"),
+            "快乐小东": ("zh_male_xudong_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "阳光青年": ("zh_male_yangguangqingnian_moon_bigtts", "seed-tts-1.0"),
+            "甜美桃子": ("zh_female_tianmeitaozi_mars_bigtts", "seed-tts-1.0"),
+            "清新女声": ("zh_female_qingxinnvsheng_mars_bigtts", "seed-tts-1.0"),
+            "知性女声": ("zh_female_zhixingnvsheng_mars_bigtts", "seed-tts-1.0"),
+            "清爽男大": ("zh_male_qingshuangnanda_mars_bigtts", "seed-tts-1.0"),
+            "邻家女孩": ("zh_female_linjianvhai_moon_bigtts", "seed-tts-1.0"),
+            "渊博小叔": ("zh_male_yuanboxiaoshu_moon_bigtts", "seed-tts-1.0"),
+            "甜美小源": ("zh_female_tianmeixiaoyuan_moon_bigtts", "seed-tts-1.0"),
+            "清澈梓梓": ("zh_female_qingchezizi_moon_bigtts", "seed-tts-1.0"),
+            "解说小明": ("zh_male_jieshuoxiaoming_moon_bigtts", "seed-tts-1.0"),
+            "开朗姐姐": ("zh_female_kailangjiejie_moon_bigtts", "seed-tts-1.0"),
+            "邻家男孩": ("zh_male_linjiananhai_moon_bigtts", "seed-tts-1.0"),
+            "甜美悦悦": ("zh_female_tianmeiyueyue_moon_bigtts", "seed-tts-1.0"),
+            "心灵鸡汤": ("zh_female_xinlingjitang_moon_bigtts", "seed-tts-1.0"),
+            "温柔小哥": ("zh_male_wenrouxiaoge_mars_bigtts", "seed-tts-1.0"),
+            "灿灿/Shiny": ("zh_female_cancan_mars_bigtts", "seed-tts-1.0"),
+            "爽快思思/Skye": ("zh_female_shuangkuaisisi_moon_bigtts", "seed-tts-1.0"),
+            "温暖阿虎/Alvin": ("zh_male_wennuanahu_moon_bigtts", "seed-tts-1.0"),
+            "少年梓辛/Brayan": ("zh_male_shaonianzixin_moon_bigtts", "seed-tts-1.0"),
+            "沪普男": ("zh_male_hupunan_mars_bigtts", "seed-tts-1.0"),
+            "鲁班七号": ("zh_male_lubanqihao_mars_bigtts", "seed-tts-1.0"),
+            "林潇": ("zh_female_yangmi_mars_bigtts", "seed-tts-1.0"),
+            "玲玲姐姐": ("zh_female_linzhiling_mars_bigtts", "seed-tts-1.0"),
+            "春日部姐姐": ("zh_female_jiyejizi2_mars_bigtts", "seed-tts-1.0"),
+            "唐僧": ("zh_male_tangseng_mars_bigtts", "seed-tts-1.0"),
+            "庄周": ("zh_male_zhuangzhou_mars_bigtts", "seed-tts-1.0"),
+            "猪八戒": ("zh_male_zhubajie_mars_bigtts", "seed-tts-1.0"),
+            "感冒电音姐姐": ("zh_female_ganmaodianyin_mars_bigtts", "seed-tts-1.0"),
+            "直率英子": ("zh_female_naying_mars_bigtts", "seed-tts-1.0"),
+            "女雷神": ("zh_female_leidian_mars_bigtts", "seed-tts-1.0"),
+            "豫州子轩": ("zh_male_yuzhouzixuan_moon_bigtts", "seed-tts-1.0"),
+            "呆萌川妹": ("zh_female_daimengchuanmei_moon_bigtts", "seed-tts-1.0"),
+            "广西远舟": ("zh_male_guangxiyuanzhou_moon_bigtts", "seed-tts-1.0"),
+            "双节棍小哥": ("zh_male_zhoujielun_emo_v2_mars_bigtts", "seed-tts-1.0"),
+            "湾湾小何": ("zh_female_wanwanxiaohe_moon_bigtts", "seed-tts-1.0"),
+            "湾区大叔": ("zh_female_wanqudashu_moon_bigtts", "seed-tts-1.0"),
+            "广州德哥": ("zh_male_guozhoudege_moon_bigtts", "seed-tts-1.0"),
+            "浩宇小哥": ("zh_male_haoyuxiaoge_moon_bigtts", "seed-tts-1.0"),
+            "北京小爷": ("zh_male_beijingxiaoye_moon_bigtts", "seed-tts-1.0"),
+            "京腔侃爷/Harmony": ("zh_male_jingqiangkanye_moon_bigtts", "seed-tts-1.0"),
+            "妹坨洁儿": ("zh_female_meituojieer_moon_bigtts", "seed-tts-1.0"),
+            "高冷御姐": ("zh_female_gaolengyujie_moon_bigtts", "seed-tts-1.0"),
+            "傲娇霸总": ("zh_male_aojiaobazong_moon_bigtts", "seed-tts-1.0"),
+            "魅力女友": ("zh_female_meilinvyou_moon_bigtts", "seed-tts-1.0"),
+            "深夜播客": ("zh_male_shenyeboke_moon_bigtts", "seed-tts-1.0"),
+            "柔美女友": ("zh_female_sajiaonvyou_moon_bigtts", "seed-tts-1.0"),
+            "撒娇学妹": ("zh_female_yuanqinvyou_moon_bigtts", "seed-tts-1.0"),
+            "东方浩然": ("zh_male_dongfanghaoran_moon_bigtts", "seed-tts-1.0"),
+            "悠悠君子": ("zh_male_M100_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "文静毛毛": ("zh_female_maomao_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "温柔小雅": ("zh_female_wenrouxiaoya_moon_bigtts", "seed-tts-1.0"),
+            "天才童声": ("zh_male_tiancaitongsheng_mars_bigtts", "seed-tts-1.0"),
+            "猴哥": ("zh_male_sunwukong_mars_bigtts", "seed-tts-1.0"),
+            "熊二": ("zh_male_xionger_mars_bigtts", "seed-tts-1.0"),
+            "佩奇猪": ("zh_female_peiqi_mars_bigtts", "seed-tts-1.0"),
+            "武则天": ("zh_female_wuzetian_mars_bigtts", "seed-tts-1.0"),
+            "顾姐": ("zh_female_gujie_mars_bigtts", "seed-tts-1.0"),
+            "樱桃丸子": ("zh_female_yingtaowanzi_mars_bigtts", "seed-tts-1.0"),
+            "广告解说": ("zh_male_chunhui_mars_bigtts", "seed-tts-1.0"),
+            "少儿故事": ("zh_female_shaoergushi_mars_bigtts", "seed-tts-1.0"),
+            "四郎": ("zh_male_silang_mars_bigtts", "seed-tts-1.0"),
+            "俏皮女声": ("zh_female_qiaopinvsheng_mars_bigtts", "seed-tts-1.0"),
+            "懒音绵宝": ("zh_male_lanxiaoyang_mars_bigtts", "seed-tts-1.0"),
+            "亮嗓萌仔": ("zh_male_dongmanhaimian_mars_bigtts", "seed-tts-1.0"),
+            "磁性解说男声/Morgan": ("zh_male_jieshuonansheng_mars_bigtts", "seed-tts-1.0"),
+            "鸡汤妹妹/Hope": ("zh_female_jitangmeimei_mars_bigtts", "seed-tts-1.0"),
+            "贴心女声/Candy": ("zh_female_tiexinnvsheng_mars_bigtts", "seed-tts-1.0"),
+            "萌丫头/Cutey": ("zh_female_mengyatou_mars_bigtts", "seed-tts-1.0"),
+            "儒雅青年": ("zh_male_ruyaqingnian_mars_bigtts", "seed-tts-1.0"),
+            "霸气青叔": ("zh_male_baqiqingshu_mars_bigtts", "seed-tts-1.0"),
+            "擎苍": ("zh_male_qingcang_mars_bigtts", "seed-tts-1.0"),
+            "活力小哥": ("zh_male_yangguangqingnian_mars_bigtts", "seed-tts-1.0"),
+            "古风少御": ("zh_female_gufengshaoyu_mars_bigtts", "seed-tts-1.0"),
+            "温柔淑女": ("zh_female_wenroushunv_mars_bigtts", "seed-tts-1.0"),
+            "反卷青年": ("zh_male_fanjuanqingnian_mars_bigtts", "seed-tts-1.0"),
+            
+            # 英文音色
+            "Adam": ("en_male_adam_mars_bigtts", "seed-tts-1.0"),
+            "Amanda": ("en_female_amanda_mars_bigtts", "seed-tts-1.0"),
+            "Jackson": ("en_male_jackson_mars_bigtts", "seed-tts-1.0"),
+            "Emily": ("en_female_emily_mars_bigtts", "seed-tts-1.0"),
+            "Smith": ("en_male_smith_mars_bigtts", "seed-tts-1.0"),
+            "Anna": ("en_female_anna_mars_bigtts", "seed-tts-1.0"),
+            "Delicate Girl": ("en_female_daisy_moon_bigtts", "seed-tts-1.0"),
+            "Dave": ("en_male_dave_moon_bigtts", "seed-tts-1.0"),
+            "Hades": ("en_male_hades_moon_bigtts", "seed-tts-1.0"),
+            "Onez": ("en_female_onez_moon_bigtts", "seed-tts-1.0"),
+            "Sarah": ("en_female_sarah_mars_bigtts", "seed-tts-1.0"),
+            "Dryw": ("en_male_dryw_mars_bigtts", "seed-tts-1.0"),
+            
+            # 日文音色
+            "さとみ（智美）": ("multi_female_sophie_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "まさお（正男）": ("multi_male_xudong_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "つき（月）": ("multi_female_maomao_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "あけみ（朱美）": ("multi_female_gaolengyujie_moon_bigtts", "seed-tts-1.0"),
+            
+            # 韩文音色
+            "Sweet Girl": ("ko_female_sweet_girl", "seed-tts-1.0"),
+            
+            # 西班牙文音色
+            "Serene Woman": ("es_female_serene_woman", "seed-tts-1.0"),
+            
+            # 其他音色
+            "Lucas": ("zh_male_M100_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "Sophie": ("zh_female_sophie_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "Daniel": ("zh_male_xudong_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "Diana": ("zh_female_maomao_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "Daisy": ("en_female_dacey_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "Owen": ("en_male_charlie_conversation_wvae_bigtts", "seed-tts-1.0"),
+            "Luna": ("en_female_sarah_new_conversation_wvae_bigtts", "seed-tts-1.0"),
+        }
+        
+        # 定义可用的音色名称列表（用于显示）
+        self.VOICE_NAMES = list(self.VOICE_MAP.keys())
     
     # 定义可用的音频格式列表
     FORMAT_LIST = [
@@ -182,27 +215,48 @@ class DoubaoTTS:
     @classmethod
     def INPUT_TYPES(cls):
         """定义节点输入类型"""
+        # 创建节点实例以获取音色列表
+        instance = cls()
+        
+        # 如果有音色分类，创建带分类的音色列表
+        if instance.VOICE_CATEGORIES:
+            # 创建分类音色列表，格式为 "分类名/音色名"
+            categorized_voices = []
+            for category, voices in instance.VOICE_CATEGORIES.items():
+                for voice in voices:
+                    categorized_voices.append(f"{category}/{voice}")
+            
+            # 默认音色也使用分类格式
+            default_voice = "1.0多情感/爽快思思（多情感）"
+            if default_voice not in categorized_voices:
+                # 如果默认音色不在列表中，使用第一个可用的音色
+                default_voice = categorized_voices[0] if categorized_voices else "爽快思思（多情感）"
+        else:
+            # 如果没有分类信息，使用扁平的音色列表
+            categorized_voices = instance.VOICE_NAMES
+            default_voice = "爽快思思（多情感）"
+        
         return {
             "required": {
                 "text": ("STRING", {"multiline": True, "default": "请输入要合成的文本"}),
-                "voice": (cls.VOICE_NAMES, {"default": "爽快思思（多情感）"}),
-                "app_id": ("STRING", {"default": ""}),
-                "access_key": ("STRING", {"default": ""}),
+                "voice": (categorized_voices, {"default": default_voice}),
             },
             "optional": {
                 "speed": ("FLOAT", {"default": 0.0, "min": -50.0, "max": 100.0, "step": 1.0}),
                 "pitch": ("INT", {"default": 0, "min": -12, "max": 12, "step": 1}),
                 "volume": ("FLOAT", {"default": 0.0, "min": -50.0, "max": 100.0, "step": 1.0}),
-                "emotion": (["happy", "sad", "angry", "fear", "hate", "excited", "coldness", "neutral", "depressed", "lovey-dovey", "shy", "comfort", "tension", "tender", "storytelling", "radio", "magnetic", "advertising", "vocal-fry", "asmr", "news", "entertainment", "dialect", ""], {"default": ""}),
+                "emotion": (["无", "生气/愤怒(angry)", "冷漠(coldness)", "恐惧(fear)", "开心/愉悦(happy)", "厌恶(hate)", "中性(neutral)", "悲伤(sad)", "沮丧(depressed)", "惊讶(surprised)", "激动/兴奋(excited)", "深情(affectionate)", "ASMR(ASMR)", "对话/闲聊(chat)", "温暖(warm)", "权威(authoritative)"], {"default": "无"}),
                 "format": (cls.FORMAT_LIST, {"default": "pcm"}),
                 "sample_rate": (cls.SAMPLE_RATE_LIST, {"default": 24000}),
                 "channel": (cls.CHANNEL_LIST, {"default": 1}),
-                "debug_output": ("BOOLEAN", {"default": False}),  # 添加调试输出选项
+                # "debug_output": ("BOOLEAN", {"default": False}),  # 调试输出选项已隐藏
+                "app_id": ("STRING", {"default": "", "display_name": "APP ID"}),  # 始终用英文显示
+                "access_key": ("STRING", {"default": "", "display_name": "Access Token"}),  # 始终用英文显示
             }
         }
     
-    RETURN_TYPES = ("AUDIO", "STRING")  # 添加STRING返回类型
-    RETURN_NAMES = ("audio", "debug_info")  # 添加返回名称
+    RETURN_TYPES = ("AUDIO")  # 添加STRING返回类型
+    # RETURN_NAMES = ("audio", "debug_info")  # 添加返回名称，开启次选项，上方需要设置为RETURN_TYPES = ("AUDIO", "STRING") 
     FUNCTION = "generate_speech"
     CATEGORY = "CC-API/Audio"
     
@@ -219,7 +273,7 @@ class DoubaoTTS:
         format="pcm",
         sample_rate=24000,
         channel=1,
-        debug_output=False  # 添加调试输出参数
+        debug_output=False  # 调试输出参数（已隐藏）
     ):
         """生成语音"""
         
@@ -228,29 +282,39 @@ class DoubaoTTS:
             # 尝试从配置文件获取API密钥
             app_id = CCConfig().get_doubao_app_id()
             if not app_id:
-                print("Error: No Doubao App ID provided")
-                audio_data, debug_info = self._create_blank_audio(sample_rate)
-                return (audio_data, debug_info)
+                error_msg = "Error: No Doubao App ID provided. Please provide a valid App ID."
+                print(error_msg)
+                return (None, error_msg)
         
         if not access_key:
             # 尝试从配置文件获取API密钥
             access_key = CCConfig().get_doubao_access_key()
             if not access_key:
-                print("Error: No Doubao Access Key provided")
-                audio_data, debug_info = self._create_blank_audio(sample_rate)
-                return (audio_data, debug_info)
+                error_msg = "Error: No Doubao Access Key provided. Please provide a valid Access Key."
+                print(error_msg)
+                return (None, error_msg)
+        
+        # 从分类音色名称中提取实际音色名称
+        actual_voice = voice
+        if "/" in voice:
+            # 如果是分类格式 "分类名/音色名"，提取音色名部分
+            actual_voice = voice.split("/", 1)[1]
         
         # 根据选择的音色获取voice_type和resource_id
-        if voice in self.VOICE_MAP:
-            voice_type, resource_id = self.VOICE_MAP[voice]
+        if actual_voice in self.VOICE_MAP:
+            voice_info = self.VOICE_MAP[actual_voice]
+            voice_type = voice_info[0]
+            resource_id = voice_info[1]
         else:
             # 如果找不到映射，默认使用第一个音色
-            voice_type, resource_id = list(self.VOICE_MAP.values())[0]
-            print(f"Warning: Voice '{voice}' not found in voice map, using default voice")
+            voice_info = list(self.VOICE_MAP.values())[0]
+            voice_type = voice_info[0]
+            resource_id = voice_info[1]
+            print(f"Warning: Voice '{actual_voice}' not found in voice map, using default voice")
         
         # 打印调试信息
         print(f"Using App ID: {app_id[:8]}... (truncated for security)")
-        print(f"Using voice: {voice} (voice_type: {voice_type})")
+        print(f"Using voice: {actual_voice} (voice_type: {voice_type})")
         print(f"Using resource ID: {resource_id}")
         
         # 检查文本长度
@@ -284,8 +348,24 @@ class DoubaoTTS:
         if volume != 0.0:
             request_data["req_params"]["audio_params"]["loudness_rate"] = volume
             
-        if emotion:
-            request_data["req_params"]["audio_params"]["emotion"] = emotion
+        # 当emotion不为"无"且不为空时，检查是否应该添加emotion参数
+        if emotion and emotion != "无":
+            # 如果是中英文混合格式，提取英文部分
+            if "(" in emotion and emotion.endswith(")"):
+                emotion_en = emotion.split("(")[1].rstrip(")")
+            else:
+                emotion_en = emotion
+            
+            # 检查音色是否支持多情感以及选择的情感是否被支持
+            if self._is_voice_support_emotion(actual_voice) and self._is_emotion_supported(actual_voice, emotion_en):
+                # 只有当音色支持多情感且选择的情感被支持时才发送emotion参数
+                request_data["req_params"]["audio_params"]["emotion"] = emotion_en
+            elif not self._is_voice_support_emotion(actual_voice):
+                # 对于不支持多情感的音色，不发送emotion参数
+                pass
+            else:
+                # 音色支持多情感但选择的情感不被支持，不发送emotion参数
+                pass
         
         try:
             # 发送请求
@@ -296,6 +376,12 @@ class DoubaoTTS:
                 "Content-Type": "application/json"
             }
             
+            # 如果启用了调试输出，记录请求信息
+            if debug_output:
+                debug_info = f"Request URL: https://openspeech.bytedance.com/api/v3/tts/unidirectional\n"
+                debug_info += f"Request Headers: {headers}\n"
+                debug_info += f"Request Data: {json.dumps(request_data, ensure_ascii=False, indent=2)}\n\n"
+            
             response = requests.post(
                 "https://openspeech.bytedance.com/api/v3/tts/unidirectional",
                 headers=headers,
@@ -304,11 +390,10 @@ class DoubaoTTS:
             
             # 如果启用了调试输出，直接返回原始响应内容
             if debug_output:
-                debug_info = f"Status Code: {response.status_code}\n"
+                debug_info += f"Status Code: {response.status_code}\n"
                 debug_info += f"Response Headers: {dict(response.headers)}\n"
                 debug_info += f"Response Content: {response.text}"
-                audio_data, _ = self._create_blank_audio(sample_rate)
-                return (audio_data, debug_info)
+                return (None, debug_info)
             
             if response.status_code == 200:
                 # 根据官方示例代码，使用stream方式逐行处理响应
@@ -316,6 +401,7 @@ class DoubaoTTS:
                     # 用于存储音频数据
                     audio_data = bytearray()
                     total_audio_size = 0
+                    sentence_count = 0
                     
                     print(f"Response headers: {response.headers}")
                     
@@ -326,7 +412,7 @@ class DoubaoTTS:
                         
                         # 解析每一行JSON数据
                         data = json.loads(chunk)
-                        print(f"Received chunk: code={data.get('code', 'N/A')}, has_data={'data' in data}")
+                        print(f"Received chunk: code={data.get('code', 'N/A')}, has_data={'data' in data}, has_sentence={'sentence' in data}")
                         
                         # 检查是否有音频数据
                         if data.get("code", 0) == 0 and "data" in data and data["data"]:
@@ -339,7 +425,9 @@ class DoubaoTTS:
                         
                         # 处理文本信息
                         if data.get("code", 0) == 0 and "sentence" in data and data["sentence"]:
-                            print(f"Sentence data: {data['sentence']}")
+                            sentence_count += 1
+                            sentence_data = data["sentence"]
+                            print(f"Sentence #{sentence_count}: text='{sentence_data.get('text', '')}', phonemes_count={len(sentence_data.get('phonemes', []))}, words_count={len(sentence_data.get('words', []))}")
                             continue
                         
                         # 结束标志
@@ -349,16 +437,21 @@ class DoubaoTTS:
                         
                         # 错误处理
                         if data.get("code", 0) > 0:
-                            print(f"Error response: {data}")
-                            break
+                            error_msg = f"API Error: code={data.get('code')}, message={data.get('message', '')}. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                            print(error_msg)
+                            # 返回空音频数据和错误信息
+                            blank_audio, _ = self._create_blank_audio(sample_rate)
+                            return (blank_audio, error_msg)
                     
-                    print(f"Total audio data size: {len(audio_data)} bytes")
+                    print(f"Total audio data size: {len(audio_data)} bytes, sentence count: {sentence_count}")
                     
-                    # 如果没有收到音频数据，返回空白音频
+                    # 如果没有收到音频数据，直接报错而不是返回空白音频
                     if not audio_data:
-                        print("No audio data received")
-                        audio_data, debug_info = self._create_blank_audio(sample_rate)
-                        return (audio_data, debug_info)
+                        error_msg = "Error: No audio data received from API. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                        print(error_msg)
+                        # 返回空音频数据和错误信息
+                        blank_audio, _ = self._create_blank_audio(sample_rate)
+                        return (blank_audio, error_msg)
                     
                     # 将bytearray转换为bytes
                     audio_binary = bytes(audio_data)
@@ -366,9 +459,11 @@ class DoubaoTTS:
                     
                     # 检查解码后的数据是否为空
                     if len(audio_binary) == 0:
-                        print("Warning: Decoded audio binary is empty")
-                        audio_data, debug_info = self._create_blank_audio(sample_rate)
-                        return (audio_data, debug_info)
+                        error_msg = "Error: Decoded audio binary is empty. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                        print(error_msg)
+                        # 返回空音频数据和错误信息
+                        blank_audio, _ = self._create_blank_audio(sample_rate)
+                        return (blank_audio, error_msg)
                     
                     # 根据请求的格式处理音频数据
                     if format == "pcm":
@@ -398,9 +493,9 @@ class DoubaoTTS:
                                     # 转换为float32并归一化到[-1, 1]范围
                                     pcm_data = pcm_data.astype(np.float32) / 32768.0
                                 else:
-                                    print("Error: Audio binary data is too short for 16-bit PCM")
-                                    audio_data, debug_info = self._create_blank_audio(sample_rate)
-                                    return (audio_data, debug_info)
+                                    error_msg = "Error: Audio binary data is too short for 16-bit PCM. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                                    print(error_msg)
+                                    return (None, error_msg)
                             
                             print(f"PCM data shape: {pcm_data.shape}")
                             print(f"PCM data dtype: {pcm_data.dtype}")
@@ -408,9 +503,11 @@ class DoubaoTTS:
                             
                             # 验证PCM数据是否为空
                             if pcm_data.size == 0:
-                                print("Warning: PCM data is empty")
-                                audio_data, debug_info = self._create_blank_audio(sample_rate)
-                                return (audio_data, debug_info)
+                                error_msg = "Error: PCM data is empty. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                                print(error_msg)
+                                # 返回空音频数据和错误信息
+                                blank_audio, _ = self._create_blank_audio(sample_rate)
+                                return (blank_audio, error_msg)
                                 
                             # 添加更多PCM数据信息
                             print(f"PCM data length in samples: {len(pcm_data)}")
@@ -447,10 +544,11 @@ class DoubaoTTS:
                             
                             # 验证波形数据
                             if waveform.size == 0:
-                                print("Warning: Generated waveform is empty")
-                                audio_data, debug_info = self._create_blank_audio(sample_rate)
-                                return (audio_data, debug_info)
-                            
+                                error_msg = "Error: Generated waveform is empty. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                                print(error_msg)
+                                # 返回空音频数据和错误信息
+                                blank_audio, _ = self._create_blank_audio(sample_rate)
+                                return (blank_audio, error_msg)
                             # 验证波形数据是否包含有效音频信息
                             if np.max(np.abs(waveform)) < 1e-6:
                                 print("Warning: Generated waveform contains mostly silence")
@@ -470,8 +568,10 @@ class DoubaoTTS:
                             return (audio_data, "")
                         except Exception as e:
                             print(f"Error processing PCM audio data: {str(e)}")
-                            audio_data, debug_info = self._create_blank_audio(sample_rate)
-                            return (audio_data, debug_info)
+                            error_msg = f"Error processing PCM audio data: {str(e)}. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                            # 返回空音频数据和错误信息
+                            blank_audio, _ = self._create_blank_audio(sample_rate)
+                            return (blank_audio, error_msg)
                     else:
                         # 对于MP3或OGG格式，保存到临时文件并使用scipy读取
                         # 将音频数据保存到临时文件
@@ -488,15 +588,19 @@ class DoubaoTTS:
                             
                             # 验证读取的波形数据是否为空
                             if waveform.size == 0:
-                                print("Warning: Read waveform is empty")
+                                error_msg = "Error: Read waveform is empty. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                                print(error_msg)
                                 os.unlink(temp_file_path)
-                                audio_data, debug_info = self._create_blank_audio(sample_rate)
-                                return (audio_data, debug_info)
+                                # 返回空音频数据和错误信息
+                                blank_audio, _ = self._create_blank_audio(sample_rate)
+                                return (blank_audio, error_msg)
                         except Exception as e:
                             print(f"Error reading audio file: {str(e)}")
                             os.unlink(temp_file_path)
-                            audio_data, debug_info = self._create_blank_audio(sample_rate)
-                            return (audio_data, debug_info)
+                            error_msg = f"Error reading audio file: {str(e)}. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                            # 返回空音频数据和错误信息
+                            blank_audio, _ = self._create_blank_audio(sample_rate)
+                            return (blank_audio, error_msg)
                             
                         # 确保波形数据是float32格式
                         if waveform.dtype != np.float32:
@@ -540,11 +644,11 @@ class DoubaoTTS:
                         
                         # 验证波形数据
                         if waveform.size == 0:
-                            print("Warning: Generated waveform is empty")
+                            error_msg = "Error: Generated waveform is empty. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                            print(error_msg)
                             os.unlink(temp_file_path)
-                            audio_data, debug_info = self._create_blank_audio(sample_rate)
-                            return (audio_data, debug_info)
-                        
+                            # 返回错误信息而不是空白音频
+                            return (None, error_msg)
                         # 验证波形数据是否包含有效音频信息
                         if np.max(np.abs(waveform)) < 1e-6:
                             print("Warning: Generated waveform contains mostly silence")
@@ -567,28 +671,40 @@ class DoubaoTTS:
                         return (audio_data, "")
                 except Exception as e:
                     print(f"Error processing stream response: {str(e)}")
-                    audio_data, debug_info = self._create_blank_audio(sample_rate)
-                    return (audio_data, debug_info)
+                    error_msg = f"Error processing stream response: {str(e)}. This may be due to incompatible emotion settings for the selected voice. Try setting emotion to '无' or check your API credentials."
+                    # 返回错误信息而不是空白音频
+                    return (None, error_msg)
             else:
-                print(f"API request failed with status {response.status_code}: {response.text}")
-                # 如果响应包含JSON数据，尝试解析并显示详细错误信息
-                try:
-                    error_result = response.json()
-                    if "header" in error_result:
-                        header = error_result["header"]
-                        print(f"Error code: {header.get('code', 'N/A')}")
-                        print(f"Error message: {header.get('message', 'N/A')}")
-                except:
-                    # 如果不是JSON格式，直接显示响应内容
-                    pass
-                audio_data, debug_info = self._create_blank_audio(sample_rate)
-                return (audio_data, debug_info)
+                error_msg = f"API request failed with status {response.status_code}: {response.text}. Check your API credentials and network connection."
+                print(error_msg)
+                # 返回错误信息而不是空白音频
+                return (None, error_msg)
         
         except Exception as e:
-            print(f"Error generating speech: {str(e)}")
-            audio_data, debug_info = self._create_blank_audio(sample_rate)
-            return (audio_data, debug_info)
+            error_msg = f"Error generating speech: {str(e)}. Check your API credentials and network connection."
+            print(error_msg)
+            # 返回错误信息而不是空白音频
+            return (None, error_msg)
 
+    def _is_voice_support_emotion(self, actual_voice):
+        """检查音色是否支持多情感"""
+        # 检查音色是否在VOICE_MAP中，并且是否有情感支持列表
+        if actual_voice in self.VOICE_MAP:
+            voice_info = self.VOICE_MAP[actual_voice]
+            # 如果有第三个元素且是列表，则表示支持多情感
+            return len(voice_info) >= 3 and isinstance(voice_info[2], list)
+        return False
+    
+    def _is_emotion_supported(self, actual_voice, emotion_en):
+        """检查选择的情感是否被音色支持"""
+        if actual_voice in self.VOICE_MAP:
+            voice_info = self.VOICE_MAP[actual_voice]
+            # 检查是否有情感支持列表
+            if len(voice_info) >= 3 and isinstance(voice_info[2], list):
+                supported_emotions = voice_info[2]
+                return emotion_en in supported_emotions
+        return False
+    
     def _create_blank_audio(self, sample_rate=24000):
         """创建一个空白音频文件"""
         # 创建一个短暂的静音音频文件
@@ -615,5 +731,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "DoubaoTTS": "Doubao TTS",
+    "DoubaoTTS": "Doubao TTS (ByteDance)",
 }

@@ -515,14 +515,6 @@
         "name": "音色",
         "tooltip": "选择语音合成的音色，支持多种语言的不同风格音色。"
       },
-      "app_id": {
-        "name": "应用ID",
-        "tooltip": "豆包TTS服务的应用ID。如果未提供，将使用配置文件中的密钥。"
-      },
-      "access_key": {
-        "name": "访问密钥",
-        "tooltip": "豆包TTS服务的访问密钥。如果未提供，将使用配置文件中的密钥。"
-      },
       "speed": {
         "name": "语速",
         "tooltip": "调整语音播放速度，范围-50-100，默认值为0。"
@@ -541,7 +533,7 @@
         "options": {
           "happy": "开心",
           "sad": "悲伤",
-          "angry": "愤怒",
+          "angry": "生气",
           "fear": "恐惧",
           "hate": "厌恶",
           "excited": "激动",
@@ -580,6 +572,14 @@
       "channel": {
         "name": "声道数",
         "tooltip": "选择音频声道数，1为单声道，2为立体声。"
+      },
+      "app_id": {
+        "name": "APP ID",
+        "tooltip": "豆包TTS服务的应用ID。如果未提供，将使用配置文件中的密钥。"
+      },
+      "access_key": {
+        "name": "Access Token",
+        "tooltip": "豆包TTS服务的访问密钥。如果未提供，将使用配置文件中的密钥。"
       }
     },
     "outputs": {

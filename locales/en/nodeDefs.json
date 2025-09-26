@@ -444,14 +444,6 @@
         "name": "Voice",
         "tooltip": "Select the voice for speech synthesis, supporting various voices in different languages."
       },
-      "app_id": {
-        "name": "App ID",
-        "tooltip": "Doubao TTS service application ID. If not provided, will use the key from config file."
-      },
-      "access_key": {
-        "name": "Access Key",
-        "tooltip": "Doubao TTS service access key. If not provided, will use the key from config file."
-      },
       "speed": {
         "name": "Speed",
         "tooltip": "Adjust speech playback speed, range -50-100, default value is 0."
@@ -510,6 +502,14 @@
       "channel": {
         "name": "Channel",
         "tooltip": "Select audio channel count, 1 for mono, 2 for stereo."
+      },
+      "app_id": {
+        "name": "APP ID",
+        "tooltip": "Doubao TTS service application ID. If not provided, will use the key from config file."
+      },
+      "access_key": {
+        "name": "Access Token",
+        "tooltip": "Doubao TTS service access key. If not provided, will use the key from config file."
       }
     },
     "outputs": {
