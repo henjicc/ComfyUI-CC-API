@@ -13,6 +13,7 @@ node_list = [
     "minimax_voice_clone_node",
     "tools_node",
     "doubao_tts_node",
+    "doubao_tts_mix_node",
 ]
 
 NODE_CLASS_MAPPINGS = {}

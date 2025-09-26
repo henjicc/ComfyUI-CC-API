@@ -518,5 +518,78 @@
         "tooltip": "Generated audio file."
       }
     }
+  },
+  "DoubaoTTS_Mix": {
+    "display_name": "Doubao TTS Mix",
+    "description": "Doubao TTS Mix node based on Volcano Engine's Doubao TTS service, supporting mixing of multiple voices to create personalized audio.",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text content to synthesize, supports multilingual mixed input. Maximum input is 10000 characters."
+      },
+      "voice_1": {
+        "name": "Voice 1",
+        "tooltip": "First voice for speech synthesis, supporting various voices in different languages."
+      },
+      "mix_factor_1": {
+        "name": "Mix Factor 1",
+        "tooltip": "Mixing factor for the first voice, range 0.0-1.0. The sum of all mixing factors must equal 1.0."
+      },
+      "voice_2": {
+        "name": "Voice 2",
+        "tooltip": "Second voice for speech synthesis, supporting various voices in different languages."
+      },
+      "mix_factor_2": {
+        "name": "Mix Factor 2",
+        "tooltip": "Mixing factor for the second voice, range 0.0-1.0. The sum of all mixing factors must equal 1.0."
+      },
+      "voice_3": {
+        "name": "Voice 3",
+        "tooltip": "Third voice for speech synthesis. Can be set to 'None' to use only two voices."
+      },
+      "mix_factor_3": {
+        "name": "Mix Factor 3",
+        "tooltip": "Mixing factor for the third voice, range 0.0-1.0. The sum of all mixing factors must equal 1.0."
+      },
+      "speed": {
+        "name": "Speed",
+        "tooltip": "Adjust speech playback speed, range -50-100, default value is 0."
+      },
+      "pitch": {
+        "name": "Pitch",
+        "tooltip": "Adjust speech pitch, range -12 to 12, default value is 0."
+      },
+      "format": {
+        "name": "Audio Format",
+        "tooltip": "Select the output audio format.",
+        "options": {
+          "mp3": "MP3 - Compressed audio format",
+          "pcm": "PCM - Uncompressed audio format",
+          "ogg_opus": "OGG_OPUS - Efficient compressed audio format"
+        }
+      },
+      "sample_rate": {
+        "name": "Sample Rate",
+        "tooltip": "Select audio sample rate, affects audio quality and file size."
+      },
+      "channel": {
+        "name": "Channel",
+        "tooltip": "Select audio channel count, 1 for mono, 2 for stereo."
+      },
+      "app_id": {
+        "name": "APP ID",
+        "tooltip": "Doubao TTS service application ID. If not provided, will use the key from config file."
+      },
+      "access_key": {
+        "name": "Access Token",
+        "tooltip": "Doubao TTS service access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Audio",
+        "tooltip": "Generated audio file."
+      }
+    }
   }
 }

@@ -731,5 +731,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "DoubaoTTS": "Doubao TTS (ByteDance)",
+    "DoubaoTTS": "Doubao TTS",
 }
