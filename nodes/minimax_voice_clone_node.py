@@ -6,6 +6,7 @@ import torch
 import numpy as np
 from scipy.io import wavfile
 from .cc_utils import CCConfig
+from .audio_utils import process_audio_for_minimax
 
 # 尝试导入音频处理库
 try:
@@ -113,40 +114,10 @@ class MiniMaxVoiceClone:
     
     def _upload_audio_file(self, audio_data, api_key, purpose):
         """上传音频文件到MiniMax"""
+        temp_filename = None
         try:
-            # 将音频数据保存为临时文件
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_file:
-                temp_filename = temp_file.name
-                
-                # 从ComfyUI音频格式转换为wav文件
-                if isinstance(audio_data, dict) and "waveform" in audio_data and "sample_rate" in audio_data:
-                    waveform = audio_data["waveform"]
-                    sample_rate = audio_data["sample_rate"]
-                    
-                    # 确保waveform是numpy数组
-                    if isinstance(waveform, torch.Tensor):
-                        waveform = waveform.cpu().numpy()
-                    
-                    # 处理波形数据形状 [B, C, T] -> [T, C]
-                    if waveform.ndim == 3:
-                        waveform = waveform.squeeze(0)  # 移除批次维度
-                        if waveform.ndim == 3:
-                            waveform = waveform.transpose(1, 2, 0)  # 转换为[T, C]
-                        elif waveform.ndim == 2:
-                            waveform = waveform.T  # 转换为[T, C]
-                    
-                    # 确保数据在[-1, 1]范围内
-                    waveform = np.clip(waveform, -1.0, 1.0)
-                    
-                    # 转换为16位整数
-                    audio_int16 = (waveform * 32767).astype(np.int16)
-                    
-                    # 保存为wav文件
-                    wavfile.write(temp_filename, sample_rate, audio_int16)
-                else:
-                    # print("Invalid audio data format")
-                    raise ValueError("Invalid audio data format")
-                    return None
+            # 使用新的音频处理工具处理音频
+            temp_filename, file_size = process_audio_for_minimax(audio_data)
             
             # 上传文件
             url = "https://api.minimaxi.com/v1/files/upload"
@@ -156,14 +127,13 @@ class MiniMaxVoiceClone:
             data = {
                 "purpose": purpose
             }
-            files = {
-                "file": open(temp_filename, "rb")
-            }
             
-            response = requests.post(url, headers=headers, data=data, files=files)
+            # 使用上下文管理器确保文件正确关闭
+            with open(temp_filename, "rb") as f:
+                files = {"file": f}
+                response = requests.post(url, headers=headers, data=data, files=files)
             
-            # 关闭文件并删除临时文件
-            files["file"].close()
+            # 删除临时文件
             os.unlink(temp_filename)
             
             if response.status_code == 200:
@@ -178,6 +148,9 @@ class MiniMaxVoiceClone:
                 raise ValueError(f"File upload failed with status {response.status_code}: {response.text}")
                 
         except Exception as e:
+            # 确保即使出错也删除临时文件
+            if temp_filename and os.path.exists(temp_filename):
+                os.unlink(temp_filename)
             raise ValueError(f"Error uploading audio file: {str(e)}")
     
     def _call_voice_clone_api(
@@ -221,10 +194,18 @@ class MiniMaxVoiceClone:
                 payload["text"] = test_text
                 payload["model"] = model
             
+            # 打印调试信息
+            print(f"Voice clone API request payload: {json.dumps(payload, indent=2, ensure_ascii=False)}")
+            
             response = requests.post(url, headers=headers, json=payload)
+            
+            print(f"Voice clone API response status: {response.status_code}")
+            print(f"Voice clone API response content: {response.text}")
             
             if response.status_code == 200:
                 result = response.json()
+                print(f"Voice clone API response JSON: {json.dumps(result, indent=2, ensure_ascii=False)}")
+                
                 if result.get("base_resp", {}).get("status_code", -1) == 0:
                     # 克隆成功，返回音色ID和试听音频URL
                     demo_audio_url = result.get("demo_audio", "")
@@ -253,41 +234,33 @@ class MiniMaxVoiceClone:
                 
                 # 首先尝试使用soundfile读取
                 if HAS_SOUNDFILE:
-                    try:
-                        waveform, sample_rate = sf.read(temp_filename, dtype='float32')
-                    except Exception as e:
-                        # print(f"Soundfile read failed: {e}")
-                        raise ValueError(f"Soundfile read failed: {e}")
+                    # 直接使用已导入的sf模块
+                    waveform, sample_rate = sf.read(temp_filename, dtype='float32')
                 
                 # 如果soundfile不可用或失败，尝试使用pydub
                 if waveform is None and HAS_PYDUB:
-                    try:
-                        audio = AudioSegment.from_file(temp_filename)
-                        # 转换为numpy数组
-                        waveform = np.array(audio.get_array_of_samples(), dtype=np.float32)
-                        # 归一化到[-1, 1]范围
-                        waveform = waveform / (2 ** (audio.sample_width * 8 - 1))
-                        sample_rate = audio.frame_rate
-                        
-                        # 如果是立体声，转换为单声道
-                        if audio.channels > 1:
-                            waveform = waveform.reshape((-1, audio.channels)).mean(axis=1)
-                    except Exception as e:
-                        raise ValueError(f"Pydub read failed: {e}")
+                    # 直接使用已导入的AudioSegment
+                    audio = AudioSegment.from_file(temp_filename)
+                    # 转换为numpy数组
+                    waveform = np.array(audio.get_array_of_samples(), dtype=np.float32)
+                    # 归一化到[-1, 1]范围
+                    waveform = waveform / (2 ** (audio.sample_width * 8 - 1))
+                    sample_rate = audio.frame_rate
+                    
+                    # 如果是立体声，转换为单声道
+                    if audio.channels > 1:
+                        waveform = waveform.reshape((-1, audio.channels)).mean(axis=1)
                 
                 # 如果以上方法都失败，尝试使用scipy.io.wavfile
                 if waveform is None:
-                    try:
-                        sample_rate, waveform = wavfile.read(temp_filename)
-                        # 转换为float32格式并归一化到[-1, 1]范围
-                        if waveform.dtype != np.float32:
-                            if np.issubdtype(waveform.dtype, np.integer):
-                                max_val = np.iinfo(waveform.dtype).max
-                                waveform = waveform.astype(np.float32) / max_val
-                            else:
-                                waveform = waveform.astype(np.float32)
-                    except Exception as e:
-                        raise ValueError(f"Wavfile read failed: {e}")
+                    sample_rate, waveform = wavfile.read(temp_filename)
+                    # 转换为float32格式并归一化到[-1, 1]范围
+                    if waveform.dtype != np.float32:
+                        if np.issubdtype(waveform.dtype, np.integer):
+                            max_val = np.iinfo(waveform.dtype).max
+                            waveform = waveform.astype(np.float32) / max_val
+                        else:
+                            waveform = waveform.astype(np.float32)
                 
                 # 删除临时文件
                 os.unlink(temp_filename)
