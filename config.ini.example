@@ -1,0 +1,24 @@
+# 火山引擎 - 即梦4.0
+[volcengine]
+API_KEY = <your_volcengine_api_key_here>
+
+# FAL
+[fal]
+API_KEY = <your_fal_api_key_here>
+
+# 阿里云百炼
+[dashscope]
+API_KEY = <your_dashscope_api_key_here>
+
+# MiniMax
+[minimax]
+API_KEY = <your_minimax_api_key_here>
+
+# 豆包语音合成大模型
+[doubao]
+APP_ID = <your_doubao_app_id_here>
+ACCESS_KEY = <your_doubao_access_key_here>
+
+# 派欧云 PPIO
+[ppio]
+API_KEY = <your_ppio_api_key_here>

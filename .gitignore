@@ -1,8 +1,9 @@
 API-Docs/
 .claude/
 .trae/
+.qoder/
 minimax_voices.json
-
+config.ini
 
 __pycache__/
 nodes/__pycache__/

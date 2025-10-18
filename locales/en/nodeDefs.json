@@ -1,6 +1,6 @@
 {
   "Seedream4": {
-    "display_name": "即梦4.0",
+    "display_name": "Seedream 4.0",
     "description": "Seedream 4.0 image generation node, supporting both text-to-image and multi-image input generation.",
     "inputs": {
       "prompt": {
@@ -253,7 +253,7 @@
           "fearful": "Fearful",
           "disgusted": "Disgusted",
           "surprised": "Surprised",
-          "calm": "Calm"
+          "neutral": "Neutral"
         }
       },
       "text_normalization": {
@@ -589,6 +589,641 @@
       "0": {
         "name": "Audio",
         "tooltip": "Generated audio file."
+      }
+    }
+  },
+  "ViduQ1Node": {
+    "display_name": "Vidu Q1 Reference Video (PioYun)",
+    "description": "Vidu Q1 reference video node that generates videos using reference images and text descriptions, supporting various subjects such as characters and objects. Outputs video files instead of URLs.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 1500 characters."
+      },
+      "aspect_ratio": {
+        "name": "Aspect Ratio",
+        "tooltip": "Output video aspect ratio.",
+        "options": {
+          "16:9": "16:9",
+          "9:16": "9:16",
+          "1:1": "1:1"
+        }
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "movement_amplitude": {
+        "name": "Movement Amplitude",
+        "tooltip": "Movement amplitude of objects in the scene.",
+        "options": {
+          "auto": "Auto",
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        }
+      },
+      "bgm": {
+        "name": "Background Music",
+        "tooltip": "Whether to add background music to the generated video."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PioYun API access key. If not provided, will use the key from config file."
+      },
+      "image_1": {
+        "name": "Reference Image 1",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      },
+      "image_2": {
+        "name": "Reference Image 2",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      },
+      "image_3": {
+        "name": "Reference Image 3",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      },
+      "image_4": {
+        "name": "Reference Image 4",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      },
+      "image_5": {
+        "name": "Reference Image 5",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      },
+      "image_6": {
+        "name": "Reference Image 6",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      },
+      "image_7": {
+        "name": "Reference Image 7",
+        "tooltip": "Reference image. The model will use the provided image as reference to generate a video with consistent subject."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "ViduQ1StartEndNode": {
+    "display_name": "Vidu Q1 Start-End Frame Video (PioYun)",
+    "description": "Vidu Q1 start-end frame video node that generates dynamic videos using start and end frames, incorporating creative storytelling and animation effects. Outputs video files instead of URLs.",
+    "inputs": {
+      "start_image": {
+        "name": "Start Frame Image",
+        "tooltip": "Start frame image, used as the starting frame for video generation."
+      },
+      "end_image": {
+        "name": "End Frame Image",
+        "tooltip": "End frame image, used as the ending frame for video generation."
+      },
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 1500 characters."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "movement_amplitude": {
+        "name": "Movement Amplitude",
+        "tooltip": "Movement amplitude of objects in the scene.",
+        "options": {
+          "auto": "Auto",
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        }
+      },
+      "bgm": {
+        "name": "Background Music",
+        "tooltip": "Whether to add background music to the generated video."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PioYun API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "ViduQ1Img2VideoNode": {
+    "display_name": "Vidu Q1 Image-to-Video (PioYun)",
+    "description": "Vidu Q1 image-to-video node that converts static images into dynamic videos, incorporating creative storytelling and animation effects. Outputs video files instead of URLs.",
+    "inputs": {
+      "image": {
+        "name": "Image",
+        "tooltip": "Image used as the starting frame for video generation."
+      },
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 1500 characters."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "movement_amplitude": {
+        "name": "Movement Amplitude",
+        "tooltip": "Movement amplitude of objects in the scene.",
+        "options": {
+          "auto": "Auto",
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        }
+      },
+      "bgm": {
+        "name": "Background Music",
+        "tooltip": "Whether to add background music to the generated video."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PioYun API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "MinimaxHailuoPPIONode": {
+    "display_name": "Minimax Hailuo-02 (PPIO)",
+    "description": "Minimax Hailuo-02 video generation node, supporting both text-to-video and image-to-video generation.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, length range is 1-2000 characters."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds), optional values are 6 or 10 seconds.",
+        "options": {
+          "6": "6 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Resolution of generated video, 6-second videos support 768P and 1080P, 10-second videos only support 768P.",
+        "options": {
+          "768P": "768P",
+          "1080P": "1080P"
+        }
+      },
+      "enable_prompt_expansion": {
+        "name": "Enable Prompt Expansion",
+        "tooltip": "Whether to enable prompt expansion feature."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "image": {
+        "name": "Start Frame Image",
+        "tooltip": "Start frame image for video generation (optional)."
+      },
+      "end_image": {
+        "name": "End Frame Image",
+        "tooltip": "End frame image for video generation (optional)."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      },
+      "1": {
+        "name": "Task ID",
+        "tooltip": "The ID of the generation task, which can be used to query task status."
+      }
+    }
+  },
+  "SeedancePPIOImg2VideoNode": {
+    "display_name": "Seedance Image-to-Video (PPIO)",
+    "description": "Seedance image-to-video node that converts static images into dynamic videos, supporting both Lite and Pro versions. Outputs video files instead of URLs.",
+    "inputs": {
+      "image": {
+        "name": "Image",
+        "tooltip": "Image used as the starting frame for video generation."
+      },
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 1500 characters."
+      },
+      "model_version": {
+        "name": "Model Version",
+        "tooltip": "Select the model version to use, Lite or Pro.",
+        "options": {
+          "lite": "Lite Version",
+          "pro": "Pro Version"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Output video resolution.",
+        "options": {
+          "480p": "480p",
+          "720p": "720p",
+          "1080p": "1080p"
+        }
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds).",
+        "options": {
+          "5": "5 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "camera_fixed": {
+        "name": "Camera Fixed",
+        "tooltip": "Whether to keep the camera position fixed."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "last_image": {
+        "name": "Last Image",
+        "tooltip": "End frame image, only supported by Lite version."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      },
+      "1": {
+        "name": "Task ID",
+        "tooltip": "The ID of the generation task, which can be used to query task status."
+      }
+    }
+  },
+  "SeedancePPIOText2VideoNode": {
+    "display_name": "Seedance Text-to-Video (PPIO)",
+    "description": "Seedance text-to-video node that generates videos from text descriptions, supporting both Lite and Pro versions. Outputs video files instead of URLs.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 1500 characters."
+      },
+      "model_version": {
+        "name": "Model Version",
+        "tooltip": "Select the model version to use, Lite or Pro.",
+        "options": {
+          "lite": "Lite Version",
+          "pro": "Pro Version"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Output video resolution.",
+        "options": {
+          "480p": "480p",
+          "720p": "720p",
+          "1080p": "1080p"
+        }
+      },
+      "aspect_ratio": {
+        "name": "Aspect Ratio",
+        "tooltip": "Output video aspect ratio.",
+        "options": {
+          "21:9": "21:9",
+          "16:9": "16:9",
+          "4:3": "4:3",
+          "1:1": "1:1",
+          "3:4": "3:4",
+          "9:16": "9:16",
+          "9:21": "9:21"
+        }
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds).",
+        "options": {
+          "5": "5 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "camera_fixed": {
+        "name": "Camera Fixed",
+        "tooltip": "Whether to keep the camera position fixed."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      },
+      "1": {
+        "name": "Task ID",
+        "tooltip": "The ID of the generation task, which can be used to query task status."
+      }
+    }
+  },
+  "PixVersePPIOImg2VideoNode": {
+    "display_name": "PixVerse V4.5 Image-to-Video (PPIO)",
+    "description": "PixVerse V4.5 image-to-video node that generates high-quality videos from images and text descriptions.",
+    "inputs": {
+      "image": {
+        "name": "Image",
+        "tooltip": "Image used as the starting frame for video generation."
+      },
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 2048 characters."
+      },
+      "aspect_ratio": {
+        "name": "Aspect Ratio",
+        "tooltip": "Output video aspect ratio.",
+        "options": {
+          "16:9": "16:9",
+          "4:3": "4:3",
+          "1:1": "1:1",
+          "3:4": "3:4",
+          "9:16": "9:16"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Output video resolution.",
+        "options": {
+          "360p": "360p",
+          "540p": "540p",
+          "720p": "720p",
+          "1080p": "1080p"
+        }
+      },
+      "fast_mode": {
+        "name": "Fast Mode",
+        "tooltip": "Whether to enable fast mode, which will generate videos faster but may reduce quality."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "negative_prompt": {
+        "name": "Negative Prompt",
+        "tooltip": "Negative prompt for generation, maximum length of 2048 characters."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "PixVersePPIOText2VideoNode": {
+    "display_name": "PixVerse V4.5 Text-to-Video (PPIO)",
+    "description": "PixVerse V4.5 text-to-video node that generates high-quality videos from text descriptions.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 2048 characters."
+      },
+      "aspect_ratio": {
+        "name": "Aspect Ratio",
+        "tooltip": "Output video aspect ratio.",
+        "options": {
+          "16:9": "16:9",
+          "4:3": "4:3",
+          "1:1": "1:1",
+          "3:4": "3:4",
+          "9:16": "9:16"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Output video resolution.",
+        "options": {
+          "360p": "360p",
+          "540p": "540p",
+          "720p": "720p",
+          "1080p": "1080p"
+        }
+      },
+      "fast_mode": {
+        "name": "Fast Mode",
+        "tooltip": "Whether to enable fast mode, which will generate videos faster but may reduce quality."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "negative_prompt": {
+        "name": "Negative Prompt",
+        "tooltip": "Negative prompt for generation, maximum length of 2048 characters."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "MiniMaxPPIOTTS": {
+    "display_name": "MiniMax TTS (PPIO)",
+    "description": "MiniMax TTS node supporting multiple languages and voices, converts text into natural and fluent speech.",
+    "inputs": {
+      "text": {
+        "name": "Text",
+        "tooltip": "Text content to synthesize, supports multilingual mixed input. Maximum input is 10000 characters."
+      },
+      "voice": {
+        "name": "Voice",
+        "tooltip": "Select the voice for speech synthesis, supporting various voices in different languages."
+      },
+      "model": {
+        "name": "Model",
+        "tooltip": "Select the speech synthesis model, different models have differences in quality and speed.",
+        "options": {
+          "speech-02-hd": "speech-02-hd - High-quality version",
+          "speech-02-turbo": "speech-02-turbo - High-speed version",
+          "speech-2.5-hd-preview": "speech-2.5-hd-preview - Latest high-quality preview version",
+          "speech-2.5-turbo-preview": "speech-2.5-turbo-preview - Latest high-speed preview version"
+        }
+      },
+      "speed": {
+        "name": "Speed",
+        "tooltip": "Adjust speech playback speed, range 0.5-2.0, default value is 1.0."
+      },
+      "vol": {
+        "name": "Volume",
+        "tooltip": "Adjust speech volume, range 0.1-10.0, default value is 1.0."
+      },
+      "pitch": {
+        "name": "Pitch",
+        "tooltip": "Adjust speech pitch, range -12 to 12, default value is 0."
+      },
+      "emotion": {
+        "name": "Emotion",
+        "tooltip": "Select speech emotion, affects the emotional expression of the voice.",
+        "options": {
+          "happy": "Happy",
+          "sad": "Sad",
+          "angry": "Angry",
+          "fearful": "Fearful",
+          "disgusted": "Disgusted",
+          "surprised": "Surprised",
+          "neutral": "Neutral"
+        }
+      },
+      "text_normalization": {
+        "name": "Text Normalization",
+        "tooltip": "Whether to normalize text, such as conversion of numbers, dates, etc."
+      },
+      "format": {
+        "name": "Audio Format",
+        "tooltip": "Select the output audio format.",
+        "options": {
+          "mp3": "MP3 - Compressed audio format",
+          "pcm": "PCM - Uncompressed audio format",
+          "flac": "FLAC - Lossless compressed audio format",
+          "wav": "WAV - Standard audio format"
+        }
+      },
+      "sample_rate": {
+        "name": "Sample Rate",
+        "tooltip": "Select audio sample rate, affects audio quality and file size."
+      },
+      "bitrate": {
+        "name": "Bitrate",
+        "tooltip": "Select audio bitrate, only valid for MP3 format, affects audio quality and file size."
+      },
+      "channel": {
+        "name": "Channel",
+        "tooltip": "Select audio channel count, 1 for mono, 2 for stereo."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "voice_id": {
+        "name": "Voice ID",
+        "tooltip": "Voice ID input port. When connected, the 'Voice' selector selection will be ignored."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Audio",
+        "tooltip": "Generated audio file."
+      }
+    }
+  },
+  "MiniMaxPPIOVoiceClone": {
+    "display_name": "MiniMax Voice Clone (PPIO)",
+    "description": "MiniMax voice clone node, clones voice by uploading audio files, and optionally provides sample audio to enhance cloning effect.",
+    "inputs": {
+      "clone_audio": {
+        "name": "Clone Audio",
+        "tooltip": "Audio file to be cloned, supports mp3, m4a, wav formats, duration should be at least 10 seconds and no more than 5 minutes."
+      },
+      "voice_id": {
+        "name": "Voice ID",
+        "tooltip": "Custom cloned voice ID, length 8-256, first character must be an English letter, allows numbers, letters, -, _, last character cannot be - or _."
+      },
+      "prompt_audio": {
+        "name": "Prompt Audio",
+        "tooltip": "Optional sample audio file to enhance voice similarity and stability, supports mp3, m4a, wav formats, duration should be less than 8 seconds."
+      },
+      "prompt_text": {
+        "name": "Prompt Text",
+        "tooltip": "Text corresponding to the prompt audio, must match the audio content, and should end with punctuation."
+      },
+      "test_text": {
+        "name": "Test Text",
+        "tooltip": "Voice cloning test parameter, the model will read this text using the cloned voice."
+      },
+      "model": {
+        "name": "Model",
+        "tooltip": "Specify the speech model used to synthesize the test audio.",
+        "options": {
+          "speech-2.5-hd-preview": "speech-2.5-hd-preview - Latest high-quality preview version",
+          "speech-2.5-turbo-preview": "speech-2.5-turbo-preview - Latest high-speed preview version",
+          "speech-02-hd": "speech-02-hd - High-quality version",
+          "speech-02-turbo": "speech-02-turbo - High-speed version"
+        }
+      },
+      "need_noise_reduction": {
+        "name": "Noise Reduction",
+        "tooltip": "Voice cloning parameter, whether to enable noise reduction."
+      },
+      "need_volume_normalization": {
+        "name": "Volume Normalization",
+        "tooltip": "Voice cloning parameter, whether to enable volume normalization."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Demo Audio",
+        "tooltip": "Test audio synthesized using the cloned voice."
+      },
+      "1": {
+        "name": "Cloned Voice ID",
+        "tooltip": "Cloned voice ID string."
+      }
+    }
+  },
+  "PPIOQueryTaskResultNode": {
+    "display_name": "PPIO Query Task Result",
+    "description": "PPIO query task result node, used to query the execution result of asynchronous tasks.",
+    "inputs": {
+      "task_id": {
+        "name": "Task ID",
+        "tooltip": "The task ID to query."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Response Content",
+        "tooltip": "The raw JSON string of the task query result."
+      },
+      "1": {
+        "name": "Video URL",
+        "tooltip": "The extracted video URL from the response, empty if no video is available."
       }
     }
   }

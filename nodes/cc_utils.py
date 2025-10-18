@@ -21,6 +21,7 @@ class CCConfig:
     _minimax_key = None
     _doubao_app_id = None
     _doubao_access_key = None
+    _ppio_key = None  # 派欧云API密钥
 
     def __new__(cls):
         if cls._instance is None:
@@ -91,6 +92,18 @@ class CCConfig:
             # Doubao credentials are optional
             self._doubao_access_key = None
 
+        # Initialize PPIO API credentials
+        try:
+            if os.environ.get("PPIO_API_KEY") is not None:
+                self._ppio_key = os.environ["PPIO_API_KEY"]
+            else:
+                self._ppio_key = config["ppio"]["API_KEY"]
+                if self._ppio_key != "<your_ppio_api_key_here>":
+                    os.environ["PPIO_API_KEY"] = self._ppio_key
+        except KeyError:
+            # PPIO credentials are optional
+            self._ppio_key = None
+
     def get_key(self):
         """Get the API key for volcengine."""
         return self._key
@@ -121,6 +134,15 @@ class CCConfig:
         
         # Return the stored Access Key
         return self._doubao_access_key
+
+    def get_ppio_key(self):
+        """Get the API key for PPIO."""
+        # First check if PPIO API key is provided as environment variable
+        if os.environ.get("PPIO_API_KEY") is not None:
+            return os.environ["PPIO_API_KEY"]
+        
+        # Return the stored key
+        return self._ppio_key
 
 
 class ImageUtils:
