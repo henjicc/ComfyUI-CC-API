@@ -1226,5 +1226,112 @@
         "tooltip": "The extracted video URL from the response, empty if no video is available."
       }
     }
+  },
+  "KlingPPIOImg2VideoNode": {
+    "display_name": "Kling 2.5 Image-to-Video (PPIO)",
+    "description": "Kling 2.5 Turbo image-to-video node that converts static images into dynamic videos, supporting professional mode.",
+    "inputs": {
+      "image": {
+        "name": "Image",
+        "tooltip": "The image to use as the starting frame for video generation."
+      },
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, maximum length of 2500 characters."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of the generated video (seconds), optional values are 5 seconds or 10 seconds.",
+        "options": {
+          "5": "5 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "cfg_scale": {
+        "name": "CFG Scale",
+        "tooltip": "Controls the flexibility of video generation. Higher values make the generated content more closely match the prompt but reduce creative freedom. Range: 0 to 1"
+      },
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Video generation mode.",
+        "options": {
+          "pro": "Professional Mode"
+        }
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "negative_prompt": {
+        "name": "Negative Prompt",
+        "tooltip": "Negative prompt to avoid unwanted content; length not exceeding 2500 characters."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "KlingPPIOText2VideoNode": {
+    "display_name": "Kling 2.5 Text-to-Video (PPIO)",
+    "description": "Kling 2.5 Turbo text-to-video node that generates high-quality videos from text descriptions, supporting professional mode.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Positive text prompt guiding the generation. Length not exceeding 2500 characters."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of the generated video (seconds), optional values are 5 seconds or 10 seconds.",
+        "options": {
+          "5": "5 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "aspect_ratio": {
+        "name": "Aspect Ratio",
+        "tooltip": "Output video aspect ratio.",
+        "options": {
+          "16:9": "16:9",
+          "9:16": "9:16",
+          "1:1": "1:1"
+        }
+      },
+      "cfg_scale": {
+        "name": "CFG Scale",
+        "tooltip": "Controls the flexibility of video generation. Higher values make the generated content more closely match the prompt but reduce creative freedom. Range: 0 to 1"
+      },
+      "mode": {
+        "name": "Mode",
+        "tooltip": "Video generation mode.",
+        "options": {
+          "pro": "Professional Mode"
+        }
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "negative_prompt": {
+        "name": "Negative Prompt",
+        "tooltip": "Negative prompt to avoid unwanted content; length not exceeding 2500 characters."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
   }
 }

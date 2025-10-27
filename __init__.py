@@ -21,6 +21,7 @@ node_list = [
     "doubao_tts_node",
     "doubao_tts_mix_node",
     "vidu_q1_node",
+    "kling_ppio_node",  # 添加派欧云Kling V2.5节点
 ]
 
 NODE_CLASS_MAPPINGS = {}
