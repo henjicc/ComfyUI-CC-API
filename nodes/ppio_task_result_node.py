@@ -18,7 +18,7 @@ class PPIOQueryTaskResultNode:
     RETURN_TYPES = ("STRING", "STRING")
     RETURN_NAMES = ("响应内容", "视频链接")
     FUNCTION = "query_task_result"
-    CATEGORY = "CC-API/Utils"
+    CATEGORY = "CC-API/Tools"
     OUTPUT_NODE = False
 
     def get_api_key(self, provided_key=""):
