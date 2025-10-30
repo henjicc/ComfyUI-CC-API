@@ -16,23 +16,26 @@ except ImportError:
     VideoInput = object
     VideoFromFile = None  # 定义为None以避免未绑定变量错误
 
-
-class PixVersePPIOImg2VideoNode:
-    """PixVerse V4.5 图生视频节点 (派欧云)"""
+class WanPPIOImg2VideoNode:
+    """万相 Wan 2.5 Preview 图生视频节点 (派欧云)"""
     
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "image": ("IMAGE",),  # 输入图像
                 "prompt": ("STRING", {"default": "", "multiline": True}),
-                "resolution": (["360p", "540p", "720p", "1080p"], {"default": "1080p"}),
-                "fast_mode": ("BOOLEAN", {"default": False, "label_on": "启用", "label_off": "禁用"}),
+                "image": ("IMAGE",),  # 首帧图片
+                "duration": ([5, 10], {"default": 5}),
+                "resolution": (["480P", "720P", "1080P"], {"default": "1080P"}),
+                "prompt_extend": ("BOOLEAN", {"default": True, "label_on": "启用", "label_off": "禁用"}),
+                "watermark": ("BOOLEAN", {"default": False, "label_on": "添加", "label_off": "不添加"}),
+                "audio": ("BOOLEAN", {"default": True, "label_on": "启用", "label_off": "禁用"}),
                 "seed": ("INT", {"default": -1, "min": -1, "max": 2147483647}),
                 "api_key": ("STRING", {"default": ""}),
             },
             "optional": {
                 "negative_prompt": ("STRING", {"default": "", "multiline": True}),
+                "audio_url": ("STRING", {"default": ""}),
             }
         }
 
@@ -41,35 +44,6 @@ class PixVersePPIOImg2VideoNode:
     FUNCTION = "generate_video"
     CATEGORY = "CC-API/Video"
     OUTPUT_NODE = False
-
-    def get_image_aspect_ratio(self, image_tensor):
-        """计算图像的宽高比并匹配最接近的预设值"""
-        try:
-            # 转换为PIL图像以获取尺寸
-            pil_image = ImageUtils.tensor_to_pil(image_tensor)
-            if pil_image:
-                width, height = pil_image.width, pil_image.height
-                ratio = width / height
-                
-                # 预设的宽高比选项
-                aspect_ratios = {
-                    "16:9": 16/9,
-                    "4:3": 4/3,
-                    "1:1": 1/1,
-                    "3:4": 3/4,
-                    "9:16": 9/16
-                }
-                
-                # 找到最接近的宽高比
-                closest_ratio = min(aspect_ratios.keys(), key=lambda x: abs(aspect_ratios[x] - ratio))
-                return closest_ratio
-            else:
-                # 如果无法获取图像尺寸，返回默认值
-                return "16:9"
-        except Exception as e:
-            print(f"Error calculating aspect ratio: {str(e)}")
-            # 出现错误时返回默认值
-            return "16:9"
 
     def get_api_key(self, provided_key=""):
         """获取API密钥，优先级：参数 > 环境变量 > 配置文件"""
@@ -107,70 +81,73 @@ class PixVersePPIOImg2VideoNode:
         return None
 
     def tensor_to_base64(self, image_tensor):
-        """将ComfyUI图像张量转换为base64字符串"""
+        """将图像张量转换为base64编码的字符串"""
         try:
             # 转换为PIL图像
             pil_image = ImageUtils.tensor_to_pil(image_tensor)
-            if pil_image:
-                # 转换为base64
-                buffered = io.BytesIO()
-                pil_image.save(buffered, format="JPEG")
-                img_str = base64.b64encode(buffered.getvalue()).decode('utf-8')
-                return f"data:image/jpeg;base64,{img_str}"
+            
+            # 转换为base64
+            buffered = io.BytesIO()
+            pil_image.save(buffered, format="PNG")
+            img_str = base64.b64encode(buffered.getvalue()).decode()
+            return img_str
         except Exception as e:
-            print(f"Error converting tensor to base64: {str(e)}")
-        return None
+            print(f"图像转换失败: {e}")
+            raise
 
-    def call_pixverse_img2video_api(self, api_key, image, prompt, aspect_ratio, resolution, fast_mode, seed, negative_prompt=None):
-        """调用PixVerse图生视频API"""
+    def call_wan_i2v_api(self, api_key, prompt, image, negative_prompt, audio_url, duration, resolution, prompt_extend, watermark, audio, seed):
+        """调用万相图生视频API"""
         try:
-            # 准备请求数据
-            payload = {
-                "prompt": prompt,
-                "aspect_ratio": aspect_ratio,
-                "resolution": resolution,
-                "fast_mode": fast_mode
+            # 转换图像为base64
+            image_base64 = self.tensor_to_base64(image)
+            img_url = f"data:image/png;base64,{image_base64}"
+            
+            # 构建请求数据
+            data = {
+                "input": {
+                    "prompt": prompt,
+                    "img_url": img_url
+                },
+                "parameters": {
+                    "resolution": resolution,
+                    "duration": duration,
+                    "prompt_extend": prompt_extend,
+                    "watermark": watermark,
+                    "audio": audio
+                }
             }
             
-            # 添加图像
-            base64_img = self.tensor_to_base64(image)
-            if base64_img:
-                payload["image"] = base64_img
-            else:
-                raise Exception("Failed to process the input image")
-            
-            # 添加负面提示词
-            if negative_prompt and negative_prompt.strip():
-                payload["negative_prompt"] = negative_prompt
-            
-            # 添加种子
+            # 添加可选参数
+            if negative_prompt:
+                data["input"]["negative_prompt"] = negative_prompt
+            if audio_url:
+                data["input"]["audio_url"] = audio_url
             if seed != -1:
-                payload["seed"] = seed
+                data["parameters"]["seed"] = seed
             
-            # 发送请求
             headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}"
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
             }
             
             response = requests.post(
-                "https://api.ppinfra.com/v3/async/pixverse-v4.5-i2v",
+                "https://api.ppinfra.com/v3/async/wan-2.5-i2v-preview",
+                json=data,
                 headers=headers,
-                json=payload,
                 timeout=30
             )
             
             if response.status_code == 200:
                 result = response.json()
-                if "task_id" in result:
-                    return result["task_id"]
-                else:
-                    raise Exception(f"API response missing task_id: {result}")
+                return result.get("task_id")
             else:
-                raise Exception(f"API request failed with status {response.status_code}: {response.text}")
+                print(f"API调用失败，状态码: {response.status_code}")
+                print(f"响应内容: {response.text}")
+                return None
                 
         except Exception as e:
-            raise Exception(f"Error calling PixVerse Img2Video API: {str(e)}")
+            print(f"调用万相图生视频API时出错: {e}")
+            return None
 
     def query_task_result(self, api_key, task_id):
         """查询任务结果"""
@@ -203,7 +180,6 @@ class PixVersePPIOImg2VideoNode:
         """轮询任务结果直到完成或失败"""
         for attempt in range(max_attempts):
             try:
-                # 简化日志输出，只显示轮询尝试次数
                 print(f"Polling attempt {attempt + 1}/{max_attempts}")
                 
                 result = self.query_task_result(api_key, task_id)
@@ -218,13 +194,6 @@ class PixVersePPIOImg2VideoNode:
                         else:
                             raise Exception("Task succeeded but no video found in result")
                     
-                    elif task_status == "TASK_STATUS_SUCCEED":
-                        # 任务成功完成 (处理API返回的另一种成功状态)
-                        if "videos" in result and len(result["videos"]) > 0:
-                            return result["videos"][0]["video_url"]
-                        else:
-                            raise Exception("Task succeeded but no video found in result")
-                    
                     elif task_status == "TASK_STATUS_FAILED":
                         # 任务失败
                         reason = result["task"].get("reason", "Unknown error")
@@ -232,17 +201,14 @@ class PixVersePPIOImg2VideoNode:
                     
                     elif task_status == "TASK_STATUS_PROCESSING":
                         # 任务正在处理中，继续轮询
-                        # 简化输出，不再显示详细进度信息
                         pass
                     
                     elif task_status == "TASK_STATUS_QUEUED":
                         # 任务排队中，继续轮询
-                        # 简化输出，不再显示详细信息
                         pass
                     
                     else:
                         # 未知状态，继续轮询
-                        # 简化输出，不再显示详细信息
                         pass
                 
                 # 等待后继续轮询
@@ -257,55 +223,43 @@ class PixVersePPIOImg2VideoNode:
 
     def generate_video(
         self,
-        image,
         prompt,
+        image,
+        duration,
         resolution,
-        fast_mode,
+        prompt_extend,
+        watermark,
+        audio,
         seed,
         api_key="",
-        negative_prompt=""
+        negative_prompt="",
+        audio_url=""
     ):
-        """生成图生视频"""
-        # 获取API密钥
-        api_key = self.get_api_key(api_key)
-        if not api_key:
-            raise ValueError("API key is required")
-        
-        # 验证提示词
-        if not prompt.strip():
-            raise ValueError("Prompt cannot be empty")
-        
-        # 验证输入图像
-        if image is None:
-            raise ValueError("Image is required")
-        
-        # 自动计算宽高比
-        aspect_ratio = self.get_image_aspect_ratio(image)
-        print(f"Auto-detected aspect ratio: {aspect_ratio}")
-        
-        # 验证分辨率和快速模式的组合
-        if fast_mode and resolution == "1080p":
-            raise ValueError("Fast mode does not support 1080p resolution")
-        
+        """生成视频的主函数"""
         try:
-            # 调用API生成视频
-            print("Calling PixVerse V4.5 Img2Video API...")
-            task_id = self.call_pixverse_img2video_api(
-                api_key=api_key,
-                image=image,
-                prompt=prompt,
-                aspect_ratio=aspect_ratio,
-                resolution=resolution,
-                fast_mode=fast_mode,
-                seed=seed if seed != -1 else None,
-                negative_prompt=negative_prompt
+            # 获取API密钥
+            api_key = self.get_api_key(api_key)
+            if not api_key:
+                raise ValueError("未找到PPIO API密钥。请在参数中提供，或设置环境变量PPIO_API_KEY，或在config.ini中配置。")
+            
+            # 调用API
+            print("Calling Wan 2.5 Preview Img2Video API...")
+            task_id = self.call_wan_i2v_api(
+                api_key, prompt, image, negative_prompt, audio_url, 
+                duration, resolution, prompt_extend, watermark, audio, seed
             )
+            
+            if not task_id:
+                raise Exception("API调用失败，未获取到任务ID")
             
             print(f"Task submitted with ID: {task_id}")
             
-            # 轮询任务结果
+            # 轮询结果
             print("Waiting for video generation to complete...")
             video_url = self.poll_task_result(api_key, task_id)
+            
+            if not video_url:
+                raise Exception("视频生成失败或超时")
             
             print(f"Video generated successfully: {video_url}")
             
@@ -324,28 +278,34 @@ class PixVersePPIOImg2VideoNode:
             else:
                 # 否则返回URL字符串
                 return (video_url,)
-            
+                
         except Exception as e:
-            print(f"Error generating video: {str(e)}")
-            raise ValueError(f"Video generation failed: {str(e)}")
+            print(f"生成视频时出错: {e}")
+            raise ValueError(f"视频生成失败: {str(e)}")
+            # 返回错误信息
+            error_msg = f"错误: {str(e)}"
+            return (error_msg,)
 
 
-class PixVersePPIOText2VideoNode:
-    """PixVerse V4.5 文生视频节点 (派欧云)"""
+class WanPPIOText2VideoNode:
+    """万相 Wan 2.5 Preview 文生视频节点 (派欧云)"""
     
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "prompt": ("STRING", {"default": "", "multiline": True}),
-                "aspect_ratio": (["16:9", "4:3", "1:1", "3:4", "9:16"], {"default": "16:9"}),
-                "resolution": (["360p", "540p", "720p", "1080p"], {"default": "540p"}),
-                "fast_mode": ("BOOLEAN", {"default": False, "label_on": "启用", "label_off": "禁用"}),
+                "size": (["832*480", "480*832", "624*624", "1280*720", "720*1280", "960*960", "1088*832", "832*1088", "1920*1080", "1080*1920", "1440*1440", "1632*1248", "1248*1632"], {"default": "1920*1080"}),
+                "duration": ([5, 10], {"default": 5}),
+                "prompt_extend": ("BOOLEAN", {"default": True, "label_on": "启用", "label_off": "禁用"}),
+                "watermark": ("BOOLEAN", {"default": False, "label_on": "添加", "label_off": "不添加"}),
+                "audio": ("BOOLEAN", {"default": True, "label_on": "启用", "label_off": "禁用"}),
                 "seed": ("INT", {"default": -1, "min": -1, "max": 2147483647}),
                 "api_key": ("STRING", {"default": ""}),
             },
             "optional": {
                 "negative_prompt": ("STRING", {"default": "", "multiline": True}),
+                "audio_url": ("STRING", {"default": ""}),
             }
         }
 
@@ -390,49 +350,54 @@ class PixVersePPIOText2VideoNode:
         
         return None
 
-    def call_pixverse_text2video_api(self, api_key, prompt, aspect_ratio, resolution, fast_mode, seed, negative_prompt=None):
-        """调用PixVerse文生视频API"""
+    def call_wan_t2v_api(self, api_key, prompt, negative_prompt, audio_url, size, duration, prompt_extend, watermark, audio, seed):
+        """调用万相文生视频API"""
         try:
-            # 准备请求数据
-            payload = {
-                "prompt": prompt,
-                "aspect_ratio": aspect_ratio,
-                "resolution": resolution,
-                "fast_mode": fast_mode
+            # 构建请求数据
+            data = {
+                "input": {
+                    "prompt": prompt
+                },
+                "parameters": {
+                    "size": size,
+                    "duration": duration,
+                    "prompt_extend": prompt_extend,
+                    "watermark": watermark,
+                    "audio": audio
+                }
             }
             
-            # 添加负面提示词
-            if negative_prompt and negative_prompt.strip():
-                payload["negative_prompt"] = negative_prompt
-            
-            # 添加种子
+            # 添加可选参数
+            if negative_prompt:
+                data["input"]["negative_prompt"] = negative_prompt
+            if audio_url:
+                data["input"]["audio_url"] = audio_url
             if seed != -1:
-                payload["seed"] = seed
+                data["parameters"]["seed"] = seed
             
-            # 发送请求
             headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {api_key}"
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
             }
             
             response = requests.post(
-                "https://api.ppinfra.com/v3/async/pixverse-v4.5-t2v",
+                "https://api.ppinfra.com/v3/async/wan-2.5-t2v-preview",
+                json=data,
                 headers=headers,
-                json=payload,
                 timeout=30
             )
             
             if response.status_code == 200:
                 result = response.json()
-                if "task_id" in result:
-                    return result["task_id"]
-                else:
-                    raise Exception(f"API response missing task_id: {result}")
+                return result.get("task_id")
             else:
-                raise Exception(f"API request failed with status {response.status_code}: {response.text}")
+                print(f"API调用失败，状态码: {response.status_code}")
+                print(f"响应内容: {response.text}")
+                return None
                 
         except Exception as e:
-            raise Exception(f"Error calling PixVerse Text2Video API: {str(e)}")
+            print(f"调用万相文生视频API时出错: {e}")
+            return None
 
     def query_task_result(self, api_key, task_id):
         """查询任务结果"""
@@ -465,7 +430,6 @@ class PixVersePPIOText2VideoNode:
         """轮询任务结果直到完成或失败"""
         for attempt in range(max_attempts):
             try:
-                # 简化日志输出，只显示轮询尝试次数
                 print(f"Polling attempt {attempt + 1}/{max_attempts}")
                 
                 result = self.query_task_result(api_key, task_id)
@@ -480,13 +444,6 @@ class PixVersePPIOText2VideoNode:
                         else:
                             raise Exception("Task succeeded but no video found in result")
                     
-                    elif task_status == "TASK_STATUS_SUCCEED":
-                        # 任务成功完成 (处理API返回的另一种成功状态)
-                        if "videos" in result and len(result["videos"]) > 0:
-                            return result["videos"][0]["video_url"]
-                        else:
-                            raise Exception("Task succeeded but no video found in result")
-                    
                     elif task_status == "TASK_STATUS_FAILED":
                         # 任务失败
                         reason = result["task"].get("reason", "Unknown error")
@@ -494,17 +451,14 @@ class PixVersePPIOText2VideoNode:
                     
                     elif task_status == "TASK_STATUS_PROCESSING":
                         # 任务正在处理中，继续轮询
-                        # 简化输出，不再显示详细进度信息
                         pass
                     
                     elif task_status == "TASK_STATUS_QUEUED":
                         # 任务排队中，继续轮询
-                        # 简化输出，不再显示详细信息
                         pass
                     
                     else:
                         # 未知状态，继续轮询
-                        # 简化输出，不再显示详细信息
                         pass
                 
                 # 等待后继续轮询
@@ -520,45 +474,41 @@ class PixVersePPIOText2VideoNode:
     def generate_video(
         self,
         prompt,
-        aspect_ratio,
-        resolution,
-        fast_mode,
+        size,
+        duration,
+        prompt_extend,
+        watermark,
+        audio,
         seed,
         api_key="",
-        negative_prompt=""
+        negative_prompt="",
+        audio_url=""
     ):
-        """生成文生视频"""
-        # 获取API密钥
-        api_key = self.get_api_key(api_key)
-        if not api_key:
-            raise ValueError("API key is required")
-        
-        # 验证提示词
-        if not prompt.strip():
-            raise ValueError("Prompt cannot be empty")
-        
-        # 验证分辨率和快速模式的组合
-        if fast_mode and resolution == "1080p":
-            raise ValueError("Fast mode does not support 1080p resolution")
-        
+        """生成视频的主函数"""
         try:
-            # 调用API生成视频
-            print("Calling PixVerse V4.5 Text2Video API...")
-            task_id = self.call_pixverse_text2video_api(
-                api_key=api_key,
-                prompt=prompt,
-                aspect_ratio=aspect_ratio,
-                resolution=resolution,
-                fast_mode=fast_mode,
-                seed=seed if seed != -1 else None,
-                negative_prompt=negative_prompt
+            # 获取API密钥
+            api_key = self.get_api_key(api_key)
+            if not api_key:
+                raise ValueError("未找到PPIO API密钥。请在参数中提供，或设置环境变量PPIO_API_KEY，或在config.ini中配置。")
+            
+            # 调用API
+            print("Calling Wan 2.5 Preview Text2Video API...")
+            task_id = self.call_wan_t2v_api(
+                api_key, prompt, negative_prompt, audio_url, 
+                size, duration, prompt_extend, watermark, audio, seed
             )
+            
+            if not task_id:
+                raise Exception("API调用失败，未获取到任务ID")
             
             print(f"Task submitted with ID: {task_id}")
             
-            # 轮询任务结果
+            # 轮询结果
             print("Waiting for video generation to complete...")
             video_url = self.poll_task_result(api_key, task_id)
+            
+            if not video_url:
+                raise Exception("视频生成失败或超时")
             
             print(f"Video generated successfully: {video_url}")
             
@@ -577,20 +527,19 @@ class PixVersePPIOText2VideoNode:
             else:
                 # 否则返回URL字符串
                 return (video_url,)
-            
+                
         except Exception as e:
-            print(f"Error generating video: {str(e)}")
-            raise ValueError(f"Video generation failed: {str(e)}")
+            print(f"生成视频时出错: {e}")
+            raise ValueError(f"视频生成失败: {str(e)}")
 
 
-# Node class mappings
+# 节点映射
 NODE_CLASS_MAPPINGS = {
-    "PixVersePPIOImg2VideoNode": PixVersePPIOImg2VideoNode,
-    "PixVersePPIOText2VideoNode": PixVersePPIOText2VideoNode
+    "WanPPIOImg2VideoNode": WanPPIOImg2VideoNode,
+    "WanPPIOText2VideoNode": WanPPIOText2VideoNode
 }
 
-# Node display name mappings
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "PixVersePPIOImg2VideoNode": "PixVerse V4.5 图生视频 (派欧云)",
-    "PixVersePPIOText2VideoNode": "PixVerse V4.5 文生视频 (派欧云)"
+    "WanPPIOImg2VideoNode": "万相 Wan 2.5 图生视频 (派欧云)",
+    "WanPPIOText2VideoNode": "万相 Wan 2.5 文生视频 (派欧云)"
 }

@@ -172,7 +172,7 @@ class ViduQ1Node:
         except Exception as e:
             raise Exception(f"Error querying task result: {str(e)}")
 
-    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=60):
+    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=120):
         """轮询任务结果直到完成或失败"""
         for attempt in range(max_attempts):
             try:
@@ -502,7 +502,7 @@ class ViduQ1StartEndNode:
         except Exception as e:
             raise Exception(f"Error querying task result: {str(e)}")
 
-    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=60):
+    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=120):
         """轮询任务结果直到完成或失败"""
         for attempt in range(max_attempts):
             try:
@@ -796,7 +796,7 @@ class ViduQ1Img2VideoNode:
         except Exception as e:
             raise Exception(f"Error querying task result: {str(e)}")
 
-    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=60):
+    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=120):
         """轮询任务结果直到完成或失败"""
         for attempt in range(max_attempts):
             try:
@@ -1050,7 +1050,7 @@ class ViduQ1Text2VideoNode:
         except Exception as e:
             raise Exception(f"Error querying task result: {str(e)}")
 
-    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=60):
+    def poll_task_result(self, api_key, task_id, poll_interval=5, max_attempts=120):
         """轮询任务结果直到完成或失败"""
         for attempt in range(max_attempts):
             try:

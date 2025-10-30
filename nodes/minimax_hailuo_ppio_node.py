@@ -25,7 +25,7 @@ class MinimaxHailuoPPIONode:
             "required": {
                 "prompt": ("STRING", {"default": "", "multiline": True}),
                 "duration": ([6, 10], {"default": 6}),
-                "resolution": (["768P", "1080P"], {"default": "768P"}),
+                "resolution": (["768P", "1080P"], {"default": "1080P"}),
                 "enable_prompt_expansion": ("BOOLEAN", {"default": True, "label_on": "启用", "label_off": "禁用"}),
                 "seed": ("INT", {"default": -1, "min": -1, "max": 2147483647}),
                 "api_key": ("STRING", {"default": ""}),

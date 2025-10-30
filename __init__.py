@@ -11,6 +11,8 @@ node_list = [
     "seedream_ppio_node",  # 添加派欧云即梦4.0节点
     "seedance_ppio_node",  # 添加派欧云即梦视频节点
     "minimax_hailuo_ppio_node",  # 添加派欧云Minimax Hailuo-02节点
+    "minimax_hailuo23_ppio_node",  # 添加派欧云Minimax Hailuo 2.3节点
+    "wan_ppio_node",  # 添加派欧云万相 Wan 2.5 Preview节点
     "ppio_task_result_node",  # 添加派欧云查询任务结果节点
     "pixverse_ppio_node",  # 添加派欧云PixVerse节点
     "minimax_ppio_node",  # 添加派欧云MiniMax节点

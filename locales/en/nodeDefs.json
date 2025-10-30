@@ -811,6 +811,286 @@
       }
     }
   },
+  "MinimaxHailuo23PPIOImg2VideoNode": {
+    "display_name": "Minimax Hailuo 2.3 Image-to-Video (PPIO)",
+    "description": "Minimax Hailuo 2.3 image-to-video node, supporting start and end frame image inputs with enhanced body movement, physics effects, and instruction understanding capabilities.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, length range is 1-2000 characters. Supports 15 camera movement instructions: horizontal movement [left][right], horizontal pan [pan left][pan right], push/pull [push in][pull out], vertical movement [up][down], vertical pan [tilt up][tilt down], zoom [zoom in][zoom out], others [shake][follow][fixed]."
+      },
+      "image": {
+        "name": "Start Frame Image",
+        "tooltip": "Start frame image for video generation."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds), optional values are 6 or 10 seconds.",
+        "options": {
+          "6": "6 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Resolution of generated video, 6-second videos support 768P and 1080P, 10-second videos only support 768P.",
+        "options": {
+          "768P": "768P",
+          "1080P": "1080P"
+        }
+      },
+      "enable_prompt_expansion": {
+        "name": "Enable Prompt Expansion",
+        "tooltip": "Whether to enable prompt expansion feature."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "end_image": {
+        "name": "End Frame Image",
+        "tooltip": "End frame image for video generation (optional)."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "MinimaxHailuo23PPIOText2VideoNode": {
+    "display_name": "Minimax Hailuo 2.3 Text-to-Video (PPIO)",
+    "description": "Minimax Hailuo 2.3 text-to-video node, pure text-based video generation with enhanced body movement, physics effects, and instruction understanding capabilities.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, length range is 1-2000 characters. Supports 15 camera movement instructions: horizontal movement [left][right], horizontal pan [pan left][pan right], push/pull [push in][pull out], vertical movement [up][down], vertical pan [tilt up][tilt down], zoom [zoom in][zoom out], others [shake][follow][fixed]."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds), optional values are 6 or 10 seconds.",
+        "options": {
+          "6": "6 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Resolution of generated video, 6-second videos support 768P and 1080P, 10-second videos only support 768P.",
+        "options": {
+          "768P": "768P",
+          "1080P": "1080P"
+        }
+      },
+      "enable_prompt_expansion": {
+        "name": "Enable Prompt Expansion",
+        "tooltip": "Whether to enable prompt expansion feature."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "MinimaxHailuo23FastPPIOImg2VideoNode": {
+    "display_name": "Minimax Hailuo 2.3 Fast Image-to-Video (PPIO)",
+    "description": "Minimax Hailuo 2.3 Fast image-to-video node, maintaining excellent image quality while significantly improving generation speed with higher cost-effectiveness.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, length range is 1-2000 characters."
+      },
+      "image": {
+        "name": "Start Frame Image",
+        "tooltip": "Start frame image for video generation."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds), optional values are 6 or 10 seconds.",
+        "options": {
+          "6": "6 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Resolution of generated video, 6-second videos support 768P and 1080P, 10-second videos only support 768P.",
+        "options": {
+          "768P": "768P",
+          "1080P": "1080P"
+        }
+      },
+      "enable_prompt_expansion": {
+        "name": "Enable Prompt Expansion",
+        "tooltip": "Whether to enable prompt expansion feature."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for video generation. Set to -1 for random generation."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "WanPPIOImg2VideoNode": {
+    "display_name": "Wan 2.5 Image-to-Video (PPIO)",
+    "description": "Wan 2.5 Preview image-to-video node, supporting video generation from start frame images and text for 5 or 10 seconds, with new audio capabilities: automatic dubbing and custom audio file support.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, supports Chinese and English, maximum 2000 characters, excess will be automatically truncated."
+      },
+      "image": {
+        "name": "Start Frame Image",
+        "tooltip": "Start frame image for video generation."
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Duration of generated video (seconds), supported values: 5 or 10.",
+        "options": {
+          "5": "5 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "resolution": {
+        "name": "Resolution",
+        "tooltip": "Resolution level of generated video.",
+        "options": {
+          "480P": "480P",
+          "720P": "720P",
+          "1080P": "1080P"
+        }
+      },
+      "prompt_extend": {
+        "name": "Prompt Extension",
+        "tooltip": "Whether to enable intelligent prompt rewriting. When enabled, uses large model to intelligently rewrite input prompt, significantly improving generation effects for shorter prompts, but increases processing time."
+      },
+      "watermark": {
+        "name": "Watermark",
+        "tooltip": "Whether to add watermark identifier, watermark is located at the bottom right corner of the image with text 'AI Generated'."
+      },
+      "audio": {
+        "name": "Audio",
+        "tooltip": "Whether to add audio. Parameter priority: audio_url > audio, only effective when audio_url is empty."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for controlling randomness of model generation, range: [0, 2147483647]. Will automatically generate random number if not filled."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "negative_prompt": {
+        "name": "Negative Prompt",
+        "tooltip": "Negative prompt for describing content to avoid during video generation, can avoid or limit scenes. Supports Chinese and English, maximum 500 characters."
+      },
+      "audio_url": {
+        "name": "Audio URL",
+        "tooltip": "Audio file URL for video generation. Audio requirements: Format: wav, mp3; Duration: 3-30 seconds; File size not exceeding 15MB."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
+  "WanPPIOText2VideoNode": {
+    "display_name": "Wan 2.5 Text-to-Video (PPIO)",
+    "description": "Wan 2.5 Preview text-to-video node, supporting high-quality video content generation from text descriptions, can generate 5 or 10 second videos, with new audio capabilities: automatic dubbing and custom audio file support.",
+    "inputs": {
+      "prompt": {
+        "name": "Prompt",
+        "tooltip": "Text prompt for video generation, supports Chinese and English, maximum 2000 characters, excess will be automatically truncated."
+      },
+      "size": {
+        "name": "Size",
+        "tooltip": "Supports 480P, 720P, 1080P resolutions. Size parameter specifies video output resolution in width*height format.",
+        "options": {
+          "832*480": "832*480 (16:9)",
+          "480*832": "480*832 (9:16)",
+          "624*624": "624*624 (1:1)",
+          "1280*720": "1280*720 (16:9)",
+          "720*1280": "720*1280 (9:16)",
+          "960*960": "960*960 (1:1)",
+          "1088*832": "1088*832 (4:3)",
+          "832*1088": "832*1088 (3:4)",
+          "1920*1080": "1920*1080 (16:9)",
+          "1080*1920": "1080*1920 (9:16)",
+          "1440*1440": "1440*1440 (1:1)",
+          "1632*1248": "1632*1248 (4:3)",
+          "1248*1632": "1248*1632 (3:4)"
+        }
+      },
+      "duration": {
+        "name": "Duration",
+        "tooltip": "Output video duration, optional values: 5 seconds, 10 seconds.",
+        "options": {
+          "5": "5 seconds",
+          "10": "10 seconds"
+        }
+      },
+      "prompt_extend": {
+        "name": "Prompt Extension",
+        "tooltip": "Whether to enable intelligent prompt rewriting. When enabled, uses large model to automatically rewrite input prompt, improving generation effects for shorter prompts, but increases processing time."
+      },
+      "watermark": {
+        "name": "Watermark",
+        "tooltip": "Whether to add watermark identifier, watermark is located at the bottom right corner of the image with text 'AI Generated'."
+      },
+      "audio": {
+        "name": "Audio",
+        "tooltip": "Whether to add audio. Parameter priority: audio_url > audio, only effective when audio_url is empty."
+      },
+      "seed": {
+        "name": "Random Seed",
+        "tooltip": "Random seed for controlling randomness of model generation content. Range: [0, 2147483647]."
+      },
+      "api_key": {
+        "name": "API Key",
+        "tooltip": "PPIO API access key. If not provided, will use the key from config file."
+      },
+      "negative_prompt": {
+        "name": "Negative Prompt",
+        "tooltip": "Negative prompt for describing content to avoid during video generation, can avoid or limit scenes. Supports Chinese and English, maximum 500 characters."
+      },
+      "audio_url": {
+        "name": "Audio URL",
+        "tooltip": "Custom audio file URL for video generation. Audio requirements: Format: wav, mp3; Duration: 3~30 seconds; File size: not exceeding 15MB."
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "Video",
+        "tooltip": "Generated video file."
+      }
+    }
+  },
   "SeedancePPIOImg2VideoNode": {
     "display_name": "Seedance Image-to-Video (PPIO)",
     "description": "Seedance image-to-video node that converts static images into dynamic videos, supporting both Lite and Pro versions. Outputs video files instead of URLs.",
